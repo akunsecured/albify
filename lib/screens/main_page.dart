@@ -1,7 +1,8 @@
+import 'package:albify/screens/auth_page.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
-  static const String ROUTE_ID = '/';
+  static const String ROUTE_ID = '/main';
   
   @override
   _MainPageState createState() => _MainPageState();
@@ -16,7 +17,18 @@ class _MainPageState extends State<MainPage> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: ElevatedButton(
+            child: Text('Logout'),
+            onPressed: () {
+              Navigator.pushReplacementNamed(
+                context,
+                AuthPage.ROUTE_ID
+              );
+            },
+          ),
+        ),
       ),
     );
   }

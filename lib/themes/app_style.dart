@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class AppStyle {
   static const int _appColorGreen = 0xff1db954;
-  static MaterialColor appColorGreen =
+  static final MaterialColor appColorGreen =
       createMaterialColor(Color(_appColorGreen));
 
   static const int _appColorBlack = 0xff191414;
-  static MaterialColor appColorBlack =
+  static final MaterialColor appColorBlack =
       createMaterialColor(Color(_appColorBlack));
 
   static MaterialColor createMaterialColor(Color color) {

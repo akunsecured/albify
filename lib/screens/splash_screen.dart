@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<bool> _checkIsLoggedIn() async {
     // TODO: Firebase checks
-    return true;
+    return false;
   }
 
   _navigateToNextScreen() async {
