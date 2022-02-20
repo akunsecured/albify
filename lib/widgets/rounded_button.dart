@@ -6,13 +6,15 @@ class RoundedButton extends StatelessWidget {
   Function() onPressed;
   bool outlined;
   Color? primary;
+  double? width;
 
   RoundedButton(
     this.text,
     this.onPressed,
     {
       this.outlined = false,
-      this.primary
+      this.primary,
+      this.width
     }
   ) {
     if (primary == null)
@@ -22,7 +24,7 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: width ?? double.infinity,
       height: 48,
       child: ElevatedButton(
         onPressed: this.onPressed,

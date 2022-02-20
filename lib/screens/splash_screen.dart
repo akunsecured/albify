@@ -1,5 +1,5 @@
-import 'package:albify/screens/auth_page.dart';
-import 'package:albify/screens/main_page.dart';
+import 'package:albify/screens/auth/auth_page.dart';
+import 'package:albify/screens/main/main_page.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:flutter/material.dart';
 

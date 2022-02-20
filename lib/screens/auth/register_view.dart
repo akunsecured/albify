@@ -4,7 +4,7 @@ import 'package:albify/widgets/circular_text_form_field.dart';
 import 'package:albify/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 
-import '../main_page.dart';
+import '../main/main_page.dart';
 
 class RegisterView extends StatefulWidget {
   Function() onLoginPressed;

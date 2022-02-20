@@ -1,5 +1,6 @@
-import 'package:albify/screens/auth_page.dart';
-import 'package:albify/screens/main_page.dart';
+import 'package:albify/screens/auth/auth_page.dart';
+import 'package:albify/screens/chat/chat_screen.dart';
+import 'package:albify/screens/main/main_page.dart';
 import 'package:albify/screens/splash_screen.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
       routes: {
         SplashScreen.ROUTE_ID: (context) => SplashScreen(),
         MainPage.ROUTE_ID: (context) => MainPage(),
-        AuthPage.ROUTE_ID: (context) => AuthPage()
+        AuthPage.ROUTE_ID: (context) => AuthPage(),
+        ChatScreen.ROUTE_ID: (context) => ChatScreen()
       },
     );
   }

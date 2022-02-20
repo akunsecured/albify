@@ -1,5 +1,5 @@
 import 'package:albify/common/utils.dart';
-import 'package:albify/screens/main_page.dart';
+import 'package:albify/screens/main/main_page.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/circular_text_form_field.dart';
 import 'package:albify/widgets/rounded_button.dart';

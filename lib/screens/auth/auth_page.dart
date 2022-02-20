@@ -1,6 +1,6 @@
 import 'package:albify/screens/auth/login_view.dart';
 import 'package:albify/screens/auth/register_view.dart';
-import 'package:albify/screens/main_page.dart';
+import 'package:albify/screens/main/main_page.dart';
 import 'package:flutter/material.dart';
 
 class AuthPage extends StatefulWidget {
