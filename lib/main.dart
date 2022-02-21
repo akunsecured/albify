@@ -1,11 +1,15 @@
-import 'package:albify/screens/auth/auth_page.dart';
+import 'package:albify/firebase_options.dart';
 import 'package:albify/screens/chat/chat_screen.dart';
-import 'package:albify/screens/main/main_page.dart';
-import 'package:albify/screens/splash_screen.dart';
+import 'package:albify/screens/starting_page.dart';
 import 'package:albify/themes/app_style.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
   runApp(MyApp());
 }
 
@@ -19,11 +23,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: AppStyle.appColorBlack,
         scaffoldBackgroundColor: AppStyle.appColorBlack
       ),
-      initialRoute: SplashScreen.ROUTE_ID,
+      initialRoute: StartingPage.ROUTE_ID,
       routes: {
-        SplashScreen.ROUTE_ID: (context) => SplashScreen(),
-        MainPage.ROUTE_ID: (context) => MainPage(),
-        AuthPage.ROUTE_ID: (context) => AuthPage(),
+        StartingPage.ROUTE_ID: (context) => StartingPage(),
         ChatScreen.ROUTE_ID: (context) => ChatScreen()
       },
     );

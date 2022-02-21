@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../auth/auth_page.dart';
 
 class ProfileView extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _ProfileViewState extends State<ProfileView> {
         child: ElevatedButton(
           child: Text('Logout'),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, AuthPage.ROUTE_ID);
+            FirebaseAuth.instance.signOut();
           },
         ),
       ),

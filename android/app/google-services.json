@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "979131778686",
+    "project_id": "albify-55066",
+    "storage_bucket": "albify-55066.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979131778686:android:f2d87c622a0bdb330dfa2f",
+        "android_client_info": {
+          "package_name": "com.example.albify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "979131778686-0b86qaopebtt19j9rulkivnbdegun8e0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2Cx8yuL05pnjYfjzROr0FMecmMn_efpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "979131778686-0b86qaopebtt19j9rulkivnbdegun8e0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

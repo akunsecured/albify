@@ -1,16 +1,18 @@
 import 'package:albify/common/utils.dart';
-import 'package:albify/screens/main/main_page.dart';
+import 'package:albify/providers/auth_provider.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/circular_text_form_field.dart';
 import 'package:albify/widgets/rounded_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
-  Function() onSignUpPressed;
+  // final Function() onSignUpPressed;
 
-  LoginView(
-    this.onSignUpPressed
-  );
+  // LoginView(
+  //   this.onSignUpPressed
+  // );
 
   @override
   _LoginViewState createState() => _LoginViewState();
@@ -23,6 +25,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Container(
       margin: EdgeInsets.all(24),
       child: Form(
@@ -54,7 +57,7 @@ class _LoginViewState extends State<LoginView> {
             Utils.addVerticalSpace(8),
             RoundedButton(
               'Sign up',
-              widget.onSignUpPressed,
+              _authProvider.changeView,
               outlined: true,
               primary: AppStyle.appColorGreen,
             ),
@@ -76,14 +79,10 @@ class _LoginViewState extends State<LoginView> {
     if (_loginFormKey.currentState!.validate()) {
       print('Email: $email\nPassword: $password');
       Utils.showLoadingDialog(context);
-      await Future.delayed(Duration(milliseconds: 3000)).then((_) {
-        // Pop loading dialog
-        Navigator.pop(context);
-        Navigator.pushReplacementNamed(
-          context,
-          MainPage.ROUTE_ID
-        );
-      });
+      FirebaseAuth.instance.signInWithEmailAndPassword(email: 'teszt@elek.me', password: '12345678')
+        .then((userCredential) {
+          Navigator.pop(context);
+        });
     }
   }
 }

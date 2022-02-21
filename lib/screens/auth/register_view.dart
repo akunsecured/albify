@@ -3,15 +3,17 @@ import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/circular_text_form_field.dart';
 import 'package:albify/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/auth_provider.dart';
 import '../main/main_page.dart';
 
 class RegisterView extends StatefulWidget {
-  Function() onLoginPressed;
+  // final Function() onLoginPressed;
 
-  RegisterView(
-    this.onLoginPressed
-  );
+  // RegisterView(
+  //   this.onLoginPressed
+  // );
 
   @override
   _RegisterViewState createState() => _RegisterViewState();
@@ -24,6 +26,8 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     return Container(
       margin: EdgeInsets.all(24),
       child: Form(
@@ -73,7 +77,7 @@ class _RegisterViewState extends State<RegisterView> {
             Utils.addVerticalSpace(8),
             RoundedButton(
               'I have an account',
-              widget.onLoginPressed,
+              _authProvider.changeView,
               outlined: true,
               primary: AppStyle.appColorGreen,
             ),

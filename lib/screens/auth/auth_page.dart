@@ -1,24 +1,16 @@
+import 'package:albify/providers/auth_provider.dart';
 import 'package:albify/screens/auth/login_view.dart';
 import 'package:albify/screens/auth/register_view.dart';
-import 'package:albify/screens/main/main_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class AuthPage extends StatefulWidget {
-  static const String ROUTE_ID = "/auth";
-  
+class AuthPage extends StatefulWidget {  
   @override
   _AuthPageState createState() => _AuthPageState();
 }
 
 class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
-  bool isLogin = true;
-
-  changeIsLogin() {
-    setState(() {
-      isLogin = !isLogin;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +38,15 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15)
                   ),
-                  child: isLogin ? LoginView(changeIsLogin) : RegisterView(changeIsLogin),
+                  // child: isLogin ? LoginView(changeIsLogin) : RegisterView(changeIsLogin),
+                  child: ChangeNotifierProvider(
+                    create: (_) => AuthProvider(),
+                    child: Selector<AuthProvider, bool>(
+                      selector: (_, authProvider) => authProvider.onLogin,
+                      builder: (_, onLogin, __) =>
+                        onLogin ? LoginView() : RegisterView(),
+                    ),
+                  ),
                 ),
               ),
               Container(
@@ -59,10 +59,10 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      MainPage.ROUTE_ID
-                    );
+                    FirebaseAuth.instance.signInAnonymously().then((userCredential) {
+                      print(userCredential);
+                      print(FirebaseAuth.instance.currentUser!);
+                    });
                   },
                 ),
               ),
