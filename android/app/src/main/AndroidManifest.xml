@@ -3,6 +3,10 @@
    <application
         android:label="Albify"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+          android:value="AIzaSyDM0dGJPmHgfz-lk4mr41vWlR5TewdxYBw" />
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
