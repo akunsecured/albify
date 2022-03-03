@@ -1,6 +1,8 @@
 import 'package:albify/providers/auth_provider.dart';
 import 'package:albify/screens/auth/login_view.dart';
 import 'package:albify/screens/auth/register_view.dart';
+import 'package:albify/services/auth_service.dart';
+import 'package:albify/themes/app_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +30,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                 ),
                 child: Image.asset(
                   'assets/images/albify_logo_white.png',
-                  height: 100,
+                  height: 80,
                 ),
               ),
               Expanded(
@@ -38,33 +40,57 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15)
                   ),
-                  // child: isLogin ? LoginView(changeIsLogin) : RegisterView(changeIsLogin),
+                  // child: Provider<AuthService>(
+                  //   create: (_) => AuthService(),
+                  //   builder: (context, child) => ChangeNotifierProvider(
+                  //     create: (_) => AuthProvider(Provider.of<AuthService>(context, listen: false)),
+                  //     builder: (context, child) => Selector<AuthProvider, bool>(
+                  //       selector: (_, authProvider) => authProvider.isLoginView,
+                  //       builder: (_, onLogin, __) =>
+                  //         onLogin ? LoginView() : RegisterView(),
+                  //     ),
+                  //   ),
+                  // ),
                   child: ChangeNotifierProvider(
-                    create: (_) => AuthProvider(),
-                    child: Selector<AuthProvider, bool>(
-                      selector: (_, authProvider) => authProvider.onLogin,
+                    create: (_) => AuthProvider(Provider.of<AuthService>(context, listen: false)),
+                    builder: (context, child) => Selector<AuthProvider, bool>(
+                      selector: (_, authProvider) => authProvider.isLoginView,
                       builder: (_, onLogin, __) =>
-                        onLogin ? LoginView() : RegisterView(),
+                        onLogin ? LoginView() : RegisterView()
                     ),
                   ),
                 ),
               ),
               Container(
                 alignment: Alignment.bottomCenter,
-                child: TextButton(
-                  child: Text(
-                    'Continue without authenticate',
-                    style: TextStyle(
-                      color: Colors.white
+                child: ChangeNotifierProvider(
+                    create: (_) => AuthProvider(Provider.of<AuthService>(context, listen: false)),
+                    builder: (context, child) => Selector<AuthProvider, bool>(
+                      selector: (_, authProvider) => authProvider.isLoadingAnonymous,
+                      builder: (_, isLoadingAnonymous, __) {
+                        final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+                        return isLoadingAnonymous ?
+                          CircularProgressIndicator(
+                            color: AppStyle.appColorGreen,
+                          ) :
+                          TextButton(
+                            child: Text(
+                              'Continue without authenticate',
+                              style: TextStyle(
+                                color: Colors.white
+                              ),
+                            ),
+                            onPressed: () {
+                              _authProvider.anonymousLogin();
+                              // FirebaseAuth.instance.signInAnonymously().then((userCredential) {
+                              //   print(userCredential);
+                              //   print(FirebaseAuth.instance.currentUser!);
+                              // });
+                            },
+                          );
+                      }
                     ),
                   ),
-                  onPressed: () {
-                    FirebaseAuth.instance.signInAnonymously().then((userCredential) {
-                      print(userCredential);
-                      print(FirebaseAuth.instance.currentUser!);
-                    });
-                  },
-                ),
               ),
             ],
           ),

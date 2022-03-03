@@ -3,25 +3,25 @@ import 'package:albify/providers/auth_provider.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/circular_text_form_field.dart';
 import 'package:albify/widgets/rounded_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
-  // final Function() onSignUpPressed;
-
-  // LoginView(
-  //   this.onSignUpPressed
-  // );
-
   @override
-  _LoginViewState createState() => _LoginViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
 class _LoginViewState extends State<LoginView> {
   final _loginFormKey = GlobalKey<FormState>();
+  late final FocusNode _emailFocus, _passwordFocus, _loginButtonFocus;
 
-  String? email, password;
+  @override
+  void initState() {
+    _emailFocus = FocusNode();
+    _passwordFocus = FocusNode();
+    _loginButtonFocus = FocusNode();
+    super.initState();
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -31,58 +31,71 @@ class _LoginViewState extends State<LoginView> {
       child: Form(
         key: _loginFormKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            CircularTextFormField(
-              'Email',
-              Icon(Icons.email),
-              Utils.validateEmail,
-              onEmailChanged,
-              inputType: TextInputType.emailAddress,
+            Text(
+              "Login",
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold
+              ),
             ),
-            Utils.addVerticalSpace(8),
-            CircularTextFormField(
-              'Password',
-              Icon(Icons.lock),
-              Utils.validatePassword,
-              onPasswordChanged,
-              obsecureText: true,
+            Column(
+              children: [
+                CircularTextFormField(
+                  'Email',
+                  Icon(Icons.email),
+                  Utils.validateEmail,
+                  _authProvider.emailController,
+                  inputType: TextInputType.emailAddress,
+                  focusNode: _emailFocus,
+                  nextFocusNode: _passwordFocus,
+                ),
+                Utils.addVerticalSpace(8),
+                CircularTextFormField(
+                  'Password',
+                  Icon(Icons.lock),
+                  Utils.validatePassword,
+                  _authProvider.passwordController,
+                  obsecureText: true,
+                  focusNode: _passwordFocus,
+                  nextFocusNode: _loginButtonFocus,
+                ),
+              ],
             ),
-            Utils.addVerticalSpace(36),
-            RoundedButton(
-              'Login',
-              onLoginPressed,
-              primary: AppStyle.appColorGreen,
-            ),
-            Utils.addVerticalSpace(8),
-            RoundedButton(
-              'Sign up',
-              _authProvider.changeView,
-              outlined: true,
-              primary: AppStyle.appColorGreen,
+            Column(
+              children: [
+                Selector<AuthProvider, bool>(
+                  selector: (_, authProvider) => authProvider.isLoading,
+                  builder: (_, onLoading, __) => onLoading ?
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
+                    )
+                    : RoundedButton(
+                        'Login',
+                        () async {
+                          if (_loginFormKey.currentState!.validate()) {
+                            print('Email: ${_authProvider.emailController.text}\n' +
+                                  'Password: ${_authProvider.passwordController.text}');
+                            await _authProvider.submit();
+                          }
+                        },
+                        primary: AppStyle.appColorGreen,
+                        focusNode: _loginButtonFocus,
+                    )
+                ),
+                Utils.addVerticalSpace(8),
+                RoundedButton(
+                  'Sign up',
+                  _authProvider.changeView,
+                  outlined: true,
+                  primary: AppStyle.appColorGreen,
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
-  }
-
-  onEmailChanged(String? value) {
-    email = value;
-  }
-
-  onPasswordChanged(String? value) {
-    password = value;
-  }
-
-  onLoginPressed() async {
-    if (_loginFormKey.currentState!.validate()) {
-      print('Email: $email\nPassword: $password');
-      Utils.showLoadingDialog(context);
-      FirebaseAuth.instance.signInWithEmailAndPassword(email: 'teszt@elek.me', password: '12345678')
-        .then((userCredential) {
-          Navigator.pop(context);
-        });
-    }
   }
 }

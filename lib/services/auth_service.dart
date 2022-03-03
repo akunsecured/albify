@@ -1,8 +1,20 @@
+import 'package:albify/common/utils.dart';
+import 'package:albify/models/firebase_user.dart';
+import 'package:albify/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  AsyncSnapshot<FirebaseUser?>? snapshot;
+
+  FirebaseUser? _userFromFirebaseAuth(User? user) =>
+    user == null ? null : FirebaseUser(uid: user.uid);
+
+  Stream<FirebaseUser?> authStateChanges() =>
+    _firebaseAuth.authStateChanges().map(_userFromFirebaseAuth);
 
   Future<void> signUp({
     required String email,
@@ -15,16 +27,22 @@ class AuthService {
           email: email,
           password: password
         );
+
+      UserModel userModel = UserModel(
+        id: _userCredential.user!.uid,
+        name: name
+      );
       
       await FirebaseFirestore.instance
         .collection('users')
         .doc(_userCredential.user!.uid)
-        .set({
-          'name': name,
-          'avatarUrl': ""
-        });
-    } catch (e) {
-      print(e);
+        .set(userModel.toMap());
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      Utils.showToast(e.message!);
+    } on FirebaseException catch (e) {
+      print(e.message);
+      Utils.showToast('Something went wrong');
     }
   }
 
@@ -37,16 +55,25 @@ class AuthService {
         email: email,
         password: password
       );
-    } catch (e) {
-      print(e);
+    } on FirebaseAuthException catch (e) {
+      print(e.message.toString());
+      Utils.showToast('Wrong credentials');
     }
   }
 
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-    } catch (e) {
-      print(e);
+    } on FirebaseAuthException catch (e) {
+      print(e.message.toString());
+    }
+  }
+
+  signInAnonymously() async {
+    try {
+      await _firebaseAuth.signInAnonymously();
+    } on FirebaseAuthException catch (e) {
+      Utils.showToast(e.message.toString());
     }
   }
 }

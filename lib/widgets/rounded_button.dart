@@ -2,11 +2,12 @@ import 'package:albify/themes/app_style.dart';
 import 'package:flutter/material.dart';
 
 class RoundedButton extends StatelessWidget {
-  String text;
-  Function() onPressed;
-  bool outlined;
+  final String text;
+  final Function() onPressed;
+  final bool outlined;
   Color? primary;
-  double? width;
+  final double? width;
+  final FocusNode? focusNode;
 
   RoundedButton(
     this.text,
@@ -14,7 +15,8 @@ class RoundedButton extends StatelessWidget {
     {
       this.outlined = false,
       this.primary,
-      this.width
+      this.width,
+      this.focusNode
     }
   ) {
     if (primary == null)
@@ -44,6 +46,7 @@ class RoundedButton extends StatelessWidget {
             ) : BorderSide.none
           )
         ),
+        focusNode: focusNode,
       ),
     );
   }

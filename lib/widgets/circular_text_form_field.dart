@@ -1,28 +1,39 @@
-import 'package:albify/common/utils.dart';
 import 'package:flutter/material.dart';
 
+import '../common/utils.dart';
+
 class CircularTextFormField extends StatefulWidget {
-  String hintText;
-  Icon icon;
-  Function(String? value)? validateFun;
-  Function(String? value) onChangedFun;
-  TextInputType? inputType;
-  bool? obsecureText;
-  bool? isConfirm;
-  String? matchWith;
+  final String hintText;
+  final Icon icon;
+  final Function(String? value)? validateFun;
+  final TextEditingController textEditingController;
+  // final Function(String? value) onChangedFun;
+  final TextInputType? inputType;
+  final bool? obsecureText;
+  final bool? isConfirm;
+  final String? matchWith;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
+  final FocusNode? nextFocusNode;
 
   CircularTextFormField(
     this.hintText,
     this.icon,
     this.validateFun,
-    this.onChangedFun,
+    this.textEditingController,
+    // this.onChangedFun,
     {
       this.inputType,
       this.obsecureText,
       this.isConfirm,
-      this.matchWith
+      this.matchWith,
+      this.textInputAction = TextInputAction.next,
+      this.focusNode,
+      this.nextFocusNode
     }
   );
+
+  set matchWith(String? value) => matchWith = value;
 
   @override
   _CircularTextFormFieldState createState() => _CircularTextFormFieldState();
@@ -65,7 +76,16 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
       ),
       validator: (value) =>
         (widget.isConfirm ?? false) ? Utils.validateConfirmPassword(value, widget.matchWith) : widget.validateFun!(value),
-      onChanged: (value) => widget.onChangedFun(value),
+      controller: widget.textEditingController,
+      textInputAction: widget.textInputAction,
+      focusNode: widget.focusNode,
+      onFieldSubmitted: (value) {
+        if (widget.focusNode != null && widget.nextFocusNode != null) {
+          widget.focusNode!.unfocus();
+          FocusScope.of(context).requestFocus(widget.nextFocusNode);
+        }
+      },
+      // onChanged: (value) => widget.onChangedFun(value),
     );
   }
 }
