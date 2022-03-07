@@ -1,9 +1,9 @@
+import 'package:albify/common/constants.dart';
 import 'package:albify/providers/auth_provider.dart';
 import 'package:albify/screens/auth/login_view.dart';
 import 'package:albify/screens/auth/register_view.dart';
 import 'package:albify/services/auth_service.dart';
 import 'package:albify/themes/app_style.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,12 +15,15 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
+    Size _size = MediaQuery.of(context).size;
+    
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
+          alignment: Alignment.center,
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height,
-            maxWidth: MediaQuery.of(context).size.width
+            maxHeight: _size.height,
+            maxWidth: _size.width
           ),
           child: Column(
             children: [
@@ -35,22 +38,12 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
               ),
               Expanded(
                 child: Container(
+                  width: getPreferredSize(_size),
                   margin: EdgeInsets.all(30),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15)
+                    borderRadius: BorderRadius.circular(RADIUS)
                   ),
-                  // child: Provider<AuthService>(
-                  //   create: (_) => AuthService(),
-                  //   builder: (context, child) => ChangeNotifierProvider(
-                  //     create: (_) => AuthProvider(Provider.of<AuthService>(context, listen: false)),
-                  //     builder: (context, child) => Selector<AuthProvider, bool>(
-                  //       selector: (_, authProvider) => authProvider.isLoginView,
-                  //       builder: (_, onLogin, __) =>
-                  //         onLogin ? LoginView() : RegisterView(),
-                  //     ),
-                  //   ),
-                  // ),
                   child: ChangeNotifierProvider(
                     create: (_) => AuthProvider(Provider.of<AuthService>(context, listen: false)),
                     builder: (context, child) => Selector<AuthProvider, bool>(
@@ -82,10 +75,6 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                             ),
                             onPressed: () {
                               _authProvider.anonymousLogin();
-                              // FirebaseAuth.instance.signInAnonymously().then((userCredential) {
-                              //   print(userCredential);
-                              //   print(FirebaseAuth.instance.currentUser!);
-                              // });
                             },
                           );
                       }

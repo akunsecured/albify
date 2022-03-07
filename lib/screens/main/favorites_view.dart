@@ -21,70 +21,76 @@ class _FavoritesViewState extends State<FavoritesView> {
   Widget build(BuildContext context) {
     return FirebaseAuth.instance.currentUser!.isAnonymous ?
       Center(child: LoginIsNeeded()) :
-      Container(
-        child: MultiProvider(
-          providers: [
-            StreamProvider<UserModel?>.value(
-              value: Provider.of<DatabaseService>(context, listen: false).userStream(),
-              initialData: null,
-              catchError: (_, err) {
-                print(err);
-              },
-            )
-          ],
-          child: FutureBuilder(
-            future: getFavProperties(),
-            builder: (BuildContext context, AsyncSnapshot<List<PropertyModel>> snapshot) {
-              if (snapshot.hasError) {
-                return Align(
-                  alignment: Alignment.center,
-                  child: MyText(
-                    text: 'Error'
-                  ),
-                );
-              }
-
-              if (
-                snapshot.connectionState == ConnectionState.none ||
-                snapshot.connectionState == ConnectionState.waiting ||
-                snapshot.connectionState == ConnectionState.active
-              ) {
+      Scaffold(
+        appBar: AppBar(
+          title: Text('Saved properties'),
+          centerTitle: true,
+        ),
+        body: Container(
+          child: MultiProvider(
+            providers: [
+              StreamProvider<UserModel?>.value(
+                value: Provider.of<DatabaseService>(context, listen: false).userStream(),
+                initialData: null,
+                catchError: (_, err) {
+                  print(err);
+                },
+              )
+            ],
+            child: FutureBuilder(
+              future: getFavProperties(),
+              builder: (BuildContext context, AsyncSnapshot<List<PropertyModel>> snapshot) {
+                if (snapshot.hasError) {
+                  return Align(
+                    alignment: Alignment.center,
+                    child: MyText(
+                      text: 'Error'
+                    ),
+                  );
+                }
+      
+                if (
+                  snapshot.connectionState == ConnectionState.none ||
+                  snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.active
+                ) {
+                  return Align(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(
+                      color: AppStyle.appColorGreen,
+                    )
+                  );
+                }
+      
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.data!.isNotEmpty) {
+                    return Align(
+                      alignment: Alignment.center,
+                      child: MyText(
+                        text: "Has data"
+                      )
+                    );
+                  }
+                  else {
+                    return Align(
+                      alignment: Alignment.center,
+                      child: MyText(
+                        text: "Has no data"
+                      )
+                    );
+                  }
+                }
+      
                 return Align(
                   alignment: Alignment.center,
                   child: CircularProgressIndicator(
                     color: AppStyle.appColorGreen,
                   )
                 );
-              }
-
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.data!.isNotEmpty) {
-                  return Align(
-                    alignment: Alignment.center,
-                    child: MyText(
-                      text: "Has data"
-                    )
-                  );
-                }
-                else {
-                  return Align(
-                    alignment: Alignment.center,
-                    child: MyText(
-                      text: "Has no data"
-                    )
-                  );
-                }
-              }
-
-              return Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  color: AppStyle.appColorGreen,
-                )
-              );
-            },
-          ),
-        )
+              },
+            ),
+          )
+        ),
       );
   }
 

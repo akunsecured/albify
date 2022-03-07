@@ -24,8 +24,8 @@ class _HomeViewState extends State<HomeView> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: RoundedButton(
-          'Search',
-          () {},
+          text: 'Search',
+          onPressed: () {},
           primary: Colors.amber,
           width: MediaQuery.of(context).size.width / 4,
         ),

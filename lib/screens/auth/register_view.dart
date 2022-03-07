@@ -102,8 +102,8 @@ class _RegisterViewState extends State<RegisterView> {
                       valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
                     )
                     : RoundedButton(
-                      'Register',
-                      () {
+                      text: 'Register',
+                      onPressed: () {
                         print(
                           'Name: ${_authProvider.nameController.text}\n' +
                           'Email: ${_authProvider.emailController.text}\n' +
@@ -120,8 +120,8 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 Utils.addVerticalSpace(8),
                 RoundedButton(
-                  'I have an account',
-                  _authProvider.changeView,
+                  text: 'I have an account',
+                  onPressed: _authProvider.changeView,
                   outlined: true,
                   primary: AppStyle.appColorGreen,
                 ),

@@ -72,8 +72,8 @@ class _LoginViewState extends State<LoginView> {
                       valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
                     )
                     : RoundedButton(
-                        'Login',
-                        () async {
+                        text: 'Login',
+                        onPressed: () async {
                           if (_loginFormKey.currentState!.validate()) {
                             print('Email: ${_authProvider.emailController.text}\n' +
                                   'Password: ${_authProvider.passwordController.text}');
@@ -86,8 +86,8 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 Utils.addVerticalSpace(8),
                 RoundedButton(
-                  'Sign up',
-                  _authProvider.changeView,
+                  text: 'Sign up',
+                  onPressed: _authProvider.changeView,
                   outlined: true,
                   primary: AppStyle.appColorGreen,
                 ),

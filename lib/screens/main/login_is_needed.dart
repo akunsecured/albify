@@ -21,8 +21,8 @@ class LoginIsNeeded extends StatelessWidget {
           ),
           Utils.addVerticalSpace(32),
           RoundedButton(
-            "Login",
-            () {
+            text: "Login",
+            onPressed: () {
               FirebaseAuth.instance.currentUser!.delete();
             },
             width: MediaQuery.of(context).size.width / 3,

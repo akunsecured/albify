@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:albify/common/constants.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:flutter/material.dart';
 
@@ -40,10 +41,10 @@ class _MessageElementState extends State<MessageElement> {
           decoration: BoxDecoration(
             borderRadius:
               BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
-                bottomLeft: sender ? Radius.circular(4) : Radius.circular(24),
-                bottomRight: sender ? Radius.circular(24) : Radius.circular(4)
+                topLeft: Radius.circular(RADIUS),
+                topRight: Radius.circular(RADIUS),
+                bottomLeft: sender ? Radius.circular(SENDER_RADIUS) : Radius.circular(RADIUS),
+                bottomRight: sender ? Radius.circular(RADIUS) : Radius.circular(SENDER_RADIUS)
               ),
             color: sender ? Colors.grey.shade600 : AppStyle.appColorGreen
           ),

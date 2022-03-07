@@ -1,3 +1,4 @@
+import 'package:albify/common/constants.dart';
 import 'package:flutter/material.dart';
 
 import '../common/utils.dart';
@@ -57,7 +58,7 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
         prefixIcon: widget.icon,
         hintText: widget.hintText,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(24)
+          borderRadius: BorderRadius.circular(RADIUS)
         ),
         suffixIcon: (widget.obsecureText ?? false) ?
           IconButton(

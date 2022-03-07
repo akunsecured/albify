@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:albify/models/property_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -51,43 +48,6 @@ class Utils {
     return SizedBox(width: width);
   }
 
-  static showLoadingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) =>
-        Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: Container(
-            margin: EdgeInsets.all(30),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  CircularProgressIndicator(),
-                  Container(
-                    margin: EdgeInsets.only(
-                      left: 16
-                    ),
-                    child: Text('Loading ...')
-                  )
-                ],
-              ),
-            ),
-          ),
-        )
-    );
-  }
-
   static void showToast(String message) {
     Fluttertoast.showToast(
       msg: message,
@@ -96,15 +56,32 @@ class Utils {
     );
   }
 
-  static Future<void> wait(int milliseconds) async {
-    Future.delayed(Duration(milliseconds: milliseconds));
+  static validatePrice(String? value) {
+    if (value == null || value.isEmpty)
+      return 'Price must be filled';
+    if (int.parse(value) < 1)
+      return 'Price must be positive number';
+    return null;
   }
 
-  static List<PropertyModel> propertiesFromSnapshot(QuerySnapshot snapshot) =>
-    snapshot
-      .docs
-      .map(
-        (doc) => PropertyModel.fromDocumentSnapshot(doc)
-      )
-      .toList();
+  static validateRooms(String? value) {
+    if (value == null || value.isEmpty)
+      return 'Rooms must be filled';
+    if (int.parse(value) < 1)
+      return 'Rooms must be positive number';
+    return null;
+  }
+
+  static validateFloorspace(String? value) {
+    if (value == null || value.isEmpty)
+      return 'Floorspace must be filled';
+    if (double.parse(value) < 1)
+      return 'Floorspace must be positive number';
+    return null;
+  }
+
+  static enumToString(PropertyType enumValue) {
+    var temp = enumValue.toString().split('.')[1];
+    return temp.substring(0, 1) + temp.toLowerCase().substring(1);
+  }
 }
