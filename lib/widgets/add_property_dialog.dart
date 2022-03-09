@@ -25,13 +25,13 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
       create: (_) => PropertyCreateProvider(Provider.of<DatabaseService>(context, listen: false)),
       builder: (context, child) {
         final _propertyCreateProvider = Provider.of<PropertyCreateProvider>(context, listen: true);
-        return Dialog(
+        return AlertDialog(
+          scrollable: true,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(RADIUS)
           ),
           elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: Center(
+          content: Center(
             child: Container(
               width: getPreferredSize(_size),
               margin: EdgeInsets.all(30),
@@ -41,87 +41,85 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(RADIUS),
               ),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _addPropertyFormKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularTextFormField(
-                        'Price',
-                        Icon(Icons.price_change),
-                        Utils.validatePrice,
-                        _propertyCreateProvider.priceController,
-                        inputType: TextInputType.number,
+              child: Form(
+                key: _addPropertyFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularTextFormField(
+                      hintText: 'Price',
+                      icon: Icon(Icons.price_change),
+                      validateFun: Utils.validatePrice,
+                      textEditingController: _propertyCreateProvider.priceController,
+                      inputType: TextInputType.number,
+                    ),
+                    Utils.addVerticalSpace(8),
+                    CircularTextFormField(
+                      hintText: 'Rooms',
+                      icon: Icon(Icons.meeting_room),
+                      validateFun: Utils.validateRooms,
+                      textEditingController: _propertyCreateProvider.roomsController,
+                      inputType: TextInputType.number,
+                    ),
+                    Utils.addVerticalSpace(8),
+                    CircularTextFormField(
+                      hintText: 'Floorspace',
+                      icon: Icon(Icons.area_chart),
+                      validateFun: Utils.validateFloorspace,
+                      textEditingController: _propertyCreateProvider.floorspaceController,
+                      inputType: TextInputType.number,
+                    ),
+                    Utils.addVerticalSpace(8),
+                    Selector<PropertyCreateProvider, int>(
+                      selector: (_, propertyCreateProvider) => propertyCreateProvider.propertyTypeValue,
+                      builder: (_, typeValue, __) => RoundedDropdownButton(
+                        value: typeValue,
+                        items: getDropdownButtonItems(),
+                        onChanged: (value) {
+                          _propertyCreateProvider.changePropertyTypeValue(value!);
+                        },
                       ),
-                      Utils.addVerticalSpace(8),
-                      CircularTextFormField(
-                        'Rooms',
-                        Icon(Icons.meeting_room),
-                        Utils.validateRooms,
-                        _propertyCreateProvider.roomsController,
-                        inputType: TextInputType.number,
+                    ),
+                    Utils.addVerticalSpace(8),
+                    Selector<PropertyCreateProvider, bool>(
+                      selector: (_, propertyCreateProvider) => propertyCreateProvider.forSale,
+                      builder: (_, isItForSale, __) => SwitchListTile(
+                        title: Text('For sale?'),
+                        value: isItForSale,
+                        onChanged: (bool value) {
+                          _propertyCreateProvider.changeForSaleStatus();
+                        }
                       ),
-                      Utils.addVerticalSpace(8),
-                      CircularTextFormField(
-                        'Floorspace',
-                        Icon(Icons.area_chart),
-                        Utils.validateFloorspace,
-                        _propertyCreateProvider.floorspaceController,
-                        inputType: TextInputType.number,
+                    ),
+                    Utils.addVerticalSpace(8),
+                    Selector<PropertyCreateProvider, bool>(
+                      selector: (_, propertyCreateProvider) => propertyCreateProvider.newlyBuilt,
+                      builder: (_, isItNewlyBuilt, __) => SwitchListTile(
+                        title: Text('Newly built?'),
+                        value: isItNewlyBuilt,
+                        onChanged: (bool value) {
+                          _propertyCreateProvider.changeNewlyBuiltStatus();
+                        }
                       ),
-                      Utils.addVerticalSpace(8),
-                      Selector<PropertyCreateProvider, int>(
-                        selector: (_, propertyCreateProvider) => propertyCreateProvider.propertyTypeValue,
-                        builder: (_, typeValue, __) => RoundedDropdownButton(
-                          value: typeValue,
-                          items: getDropdownButtonItems(),
-                          onChanged: (value) {
-                            _propertyCreateProvider.changePropertyTypeValue(value!);
-                          },
-                        ),
-                      ),
-                      Utils.addVerticalSpace(8),
-                      Selector<PropertyCreateProvider, bool>(
-                        selector: (_, propertyCreateProvider) => propertyCreateProvider.forSale,
-                        builder: (_, isItForSale, __) => SwitchListTile(
-                          title: Text('For sale?'),
-                          value: isItForSale,
-                          onChanged: (bool value) {
-                            _propertyCreateProvider.changeForSaleStatus();
-                          }
-                        ),
-                      ),
-                      Utils.addVerticalSpace(8),
-                      Selector<PropertyCreateProvider, bool>(
-                        selector: (_, propertyCreateProvider) => propertyCreateProvider.newlyBuilt,
-                        builder: (_, isItNewlyBuilt, __) => SwitchListTile(
-                          title: Text('Newly built?'),
-                          value: isItNewlyBuilt,
-                          onChanged: (bool value) {
-                            _propertyCreateProvider.changeNewlyBuiltStatus();
-                          }
-                        ),
-                      ),
-                      Utils.addVerticalSpace(32),
-                      Selector<PropertyCreateProvider, bool>(
-                        selector: (_, propertyCreateProvider) => propertyCreateProvider.isLoading,
-                        builder: (_, onLoading, __) => onLoading ?
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
-                          )
-                          : RoundedButton(
-                              text: 'Add property',
-                              onPressed: () async {
-                                if (_addPropertyFormKey.currentState!.validate()) {
-                                  bool value = await _propertyCreateProvider.submit();
-                                  Navigator.pop(context, value);
-                                }
-                              },
-                            ),
-                      )
-                    ],
-                  ),
+                    ),
+                    Utils.addVerticalSpace(32),
+                    Selector<PropertyCreateProvider, bool>(
+                      selector: (_, propertyCreateProvider) => propertyCreateProvider.isLoading,
+                      builder: (_, onLoading, __) => onLoading ?
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
+                        )
+                        : RoundedButton(
+                            text: 'Add property',
+                            onPressed: () async {
+                              if (_addPropertyFormKey.currentState!.validate()) {
+                                bool value = await _propertyCreateProvider.submit();
+                                Navigator.pop(context, value);
+                              }
+                            },
+                          ),
+                    )
+                  ],
                 ),
               ),
             ),

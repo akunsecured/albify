@@ -1,14 +1,11 @@
 import 'package:albify/common/constants.dart';
 import 'package:flutter/material.dart';
 
-import '../common/utils.dart';
-
 class CircularTextFormField extends StatefulWidget {
   final String hintText;
   final Icon icon;
-  final Function(String? value)? validateFun;
+  final Function validateFun;
   final TextEditingController textEditingController;
-  // final Function(String? value) onChangedFun;
   final TextInputType? inputType;
   final bool? obsecureText;
   final bool? isConfirm;
@@ -17,22 +14,19 @@ class CircularTextFormField extends StatefulWidget {
   final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
 
-  CircularTextFormField(
-    this.hintText,
-    this.icon,
-    this.validateFun,
-    this.textEditingController,
-    // this.onChangedFun,
-    {
-      this.inputType,
-      this.obsecureText,
-      this.isConfirm,
-      this.matchWith,
-      this.textInputAction = TextInputAction.next,
-      this.focusNode,
-      this.nextFocusNode
-    }
-  );
+  CircularTextFormField({
+    required this.hintText,
+    required this.icon,
+    required this.validateFun,
+    required this.textEditingController,
+    this.inputType,
+    this.obsecureText,
+    this.isConfirm,
+    this.matchWith,
+    this.textInputAction = TextInputAction.next,
+    this.focusNode,
+    this.nextFocusNode
+  });
 
   set matchWith(String? value) => matchWith = value;
 
@@ -75,8 +69,7 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
           ) :
           null
       ),
-      validator: (value) =>
-        (widget.isConfirm ?? false) ? Utils.validateConfirmPassword(value, widget.matchWith) : widget.validateFun!(value),
+      validator: (value) => widget.validateFun(value),
       controller: widget.textEditingController,
       textInputAction: widget.textInputAction,
       focusNode: widget.focusNode,
@@ -86,7 +79,6 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
           FocusScope.of(context).requestFocus(widget.nextFocusNode);
         }
       },
-      // onChanged: (value) => widget.onChangedFun(value),
     );
   }
 }

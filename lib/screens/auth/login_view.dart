@@ -43,20 +43,20 @@ class _LoginViewState extends State<LoginView> {
             Column(
               children: [
                 CircularTextFormField(
-                  'Email',
-                  Icon(Icons.email),
-                  Utils.validateEmail,
-                  _authProvider.emailController,
+                  hintText: 'Email',
+                  icon: Icon(Icons.email),
+                  validateFun: Utils.validateEmail,
+                  textEditingController: _authProvider.emailController,
                   inputType: TextInputType.emailAddress,
                   focusNode: _emailFocus,
                   nextFocusNode: _passwordFocus,
                 ),
                 Utils.addVerticalSpace(8),
                 CircularTextFormField(
-                  'Password',
-                  Icon(Icons.lock),
-                  Utils.validatePassword,
-                  _authProvider.passwordController,
+                  hintText: 'Password',
+                  icon: Icon(Icons.lock),
+                  validateFun: Utils.validatePassword,
+                  textEditingController: _authProvider.passwordController,
                   obsecureText: true,
                   focusNode: _passwordFocus,
                   nextFocusNode: _loginButtonFocus,

@@ -25,7 +25,9 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   void initState() {
     super.initState();
-    future = Provider.of<DatabaseService>(context, listen: false).getUserData();
+    if (!_firebaseAuth.currentUser!.isAnonymous) {
+      future = Provider.of<DatabaseService>(context, listen: false).getUserData();
+    }
   }
 
   @override

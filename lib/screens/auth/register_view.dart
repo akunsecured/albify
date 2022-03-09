@@ -31,19 +31,22 @@ class _RegisterViewState extends State<RegisterView> {
     final AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
     final CircularTextFormField confirmPasswordField = 
       CircularTextFormField(
-        'Confirm password',
-        Icon(Icons.lock),
-        null,
-        _authProvider.confirmPasswordController,
+        hintText: 'Confirm password',
+        icon: Icon(Icons.lock),
+        validateFun: (String? value) {
+          print('Confirm password:\t$value');
+          print('Password:\t${_authProvider.passwordController.text}');
+          if (value == null || value.isEmpty)
+            return 'Confirm password must be filled';
+          if (value != _authProvider.passwordController.text)
+            return 'Passwords do not match';
+          return null;
+        },
+        textEditingController: _authProvider.confirmPasswordController,
         obsecureText: true,
-        isConfirm: true,
-        matchWith: _authProvider.passwordController.text,
         focusNode: _confirmPasswordFocus,
         nextFocusNode: _signUpButtonFocus,
       );
-    _authProvider.passwordController.addListener(() {
-      confirmPasswordField.matchWith = _authProvider.passwordController.text;
-    });
     return Container(
       margin: EdgeInsets.all(24),
       child: Form(
@@ -61,30 +64,30 @@ class _RegisterViewState extends State<RegisterView> {
             Column(
               children: [
                 CircularTextFormField(
-                  'Name',
-                  Icon(Icons.person),
-                  Utils.validateName,
-                  _authProvider.nameController,
+                  hintText: 'Name',
+                  icon: Icon(Icons.person),
+                  validateFun: Utils.validateName,
+                  textEditingController: _authProvider.nameController,
                   inputType: TextInputType.name,
                   focusNode: _nameFocus,
                   nextFocusNode: _emailFocus,
                 ),
                 Utils.addVerticalSpace(8),
                 CircularTextFormField(
-                  'Email',
-                  Icon(Icons.email),
-                  Utils.validateEmail,
-                  _authProvider.emailController,
+                  hintText: 'Email',
+                  icon: Icon(Icons.email),
+                  validateFun: Utils.validateEmail,
+                  textEditingController: _authProvider.emailController,
                   inputType: TextInputType.emailAddress,
                   focusNode: _emailFocus,
                   nextFocusNode: _passwordFocus,
                 ),
                 Utils.addVerticalSpace(8),
                 CircularTextFormField(
-                  'Password',
-                  Icon(Icons.lock),
-                  Utils.validatePassword,
-                  _authProvider.passwordController,
+                  hintText: 'Password',
+                  icon: Icon(Icons.lock),
+                  validateFun: Utils.validatePassword,
+                  textEditingController: _authProvider.passwordController,
                   obsecureText: true,
                   focusNode: _passwordFocus,
                   nextFocusNode: _confirmPasswordFocus,

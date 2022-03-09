@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:albify/models/property_model.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:flutter/foundation.dart';
@@ -60,8 +62,8 @@ class PropertyCreateProvider extends ChangeNotifier {
     bool value = await databaseService.addProperty(
       PropertyModel(
         location: PropertyLocation(
-          47.4811516,
-          19.0555954
+          47.4806695 + (Random().nextDouble() / 100),
+          19.0561783 + (Random().nextDouble() / 100)
         ),
         type: PropertyType.values[this.propertyTypeValue],
         rooms: int.parse(_roomsController.text),

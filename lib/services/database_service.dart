@@ -105,12 +105,16 @@ class DatabaseService {
     return true;
   }
 
-  Stream<UserModel?> userStream() =>
-    _firestore
-      .collection("users")
-      .doc(uid)
-      .snapshots()
-      .map((snapshot) => UserModel.fromDocumentSnapshot(snapshot));
+  Stream<UserModel?> userStream() {
+    if (!_firebaseAuth.currentUser!.isAnonymous)
+      return _firestore
+        .collection("users")
+        .doc(uid)
+        .snapshots()
+        .map((snapshot) => UserModel.fromDocumentSnapshot(snapshot));
+    return Stream.empty();
+  }
+
 
   Stream<QuerySnapshot> propertiesStream() =>
     _firestore
