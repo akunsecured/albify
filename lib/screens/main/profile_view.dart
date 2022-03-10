@@ -2,6 +2,7 @@ import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/user_model.dart';
 import 'package:albify/screens/main/login_is_needed.dart';
+import 'package:albify/screens/profile/edit_profile_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/add_property_dialog.dart';
@@ -115,7 +116,9 @@ class _ProfileViewState extends State<ProfileView> {
                               icon: Icons.settings,
                               text: 'Settings',
                               width: getPreferredSize(_size),
-                              primary: Theme.of(context).backgroundColor
+                              primary: Theme.of(context).backgroundColor,
+                              onPressed: () =>
+                                Navigator.of(context).pushNamed(EditProfilePage.ROUTE_ID)
                             ),
                             buildProfileMenuItem(
                               icon: Icons.logout,
@@ -173,7 +176,7 @@ class _ProfileViewState extends State<ProfileView> {
     Function()? onPressed
   }) => Container(
     margin: EdgeInsets.symmetric(
-      horizontal: 18
+      horizontal: MARGIN_HORIZONTAL
     ).copyWith(
       bottom: 8
     ),

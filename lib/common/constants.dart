@@ -8,3 +8,4 @@ double getPreferredSize(Size size) {
 
 const double RADIUS = 24;
 const double SENDER_RADIUS = 4;
+const double MARGIN_HORIZONTAL = 16;

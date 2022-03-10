@@ -88,4 +88,8 @@ class AuthProvider extends ChangeNotifier {
 
     changeLoadingAnonymousStatus();
   }
+
+  Future<void> deleteProfile() async {
+    await authService.deleteProfile();
+  }
 }

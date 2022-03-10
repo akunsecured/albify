@@ -1,3 +1,4 @@
+import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/screens/chat/chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _ConversationElementState extends State<ConversationElement> {
       },
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 16,
+          horizontal: MARGIN_HORIZONTAL,
           vertical: 10
         ),
         child: Row(

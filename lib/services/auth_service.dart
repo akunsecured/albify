@@ -16,6 +16,8 @@ class AuthService {
   Stream<FirebaseUser?> authStateChanges() =>
     _firebaseAuth.authStateChanges().map(_userFromFirebaseAuth);
 
+  User? get currentUser => _firebaseAuth.currentUser;
+
   Future<void> signUp({
     required String email,
     required String password,
@@ -72,6 +74,14 @@ class AuthService {
   signInAnonymously() async {
     try {
       await _firebaseAuth.signInAnonymously();
+    } on FirebaseAuthException catch (e) {
+      Utils.showToast(e.message.toString());
+    }
+  }
+
+  deleteProfile() async {
+    try {
+      await _firebaseAuth.currentUser!.delete();
     } on FirebaseAuthException catch (e) {
       Utils.showToast(e.message.toString());
     }

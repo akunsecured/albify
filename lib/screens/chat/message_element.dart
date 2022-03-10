@@ -22,7 +22,7 @@ class _MessageElementState extends State<MessageElement> {
     return Container(
       padding: EdgeInsets.symmetric(
         vertical: 10,
-        horizontal: 14
+        horizontal: MARGIN_HORIZONTAL
       ),
       child: Align(
         alignment: sender ? Alignment.topLeft : Alignment.topRight,

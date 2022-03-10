@@ -1,5 +1,5 @@
 import 'package:albify/firebase_options.dart';
-import 'package:albify/screens/chat/chat_screen.dart';
+import 'package:albify/navigation/app_routes.dart';
 import 'package:albify/screens/starting_page.dart';
 import 'package:albify/screens/wrapper_builder.dart';
 import 'package:albify/services/auth_service.dart';
@@ -30,10 +30,7 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: AppStyle.appColorBlack
           ),
           initialRoute: StartingPage.ROUTE_ID,
-          routes: {
-            StartingPage.ROUTE_ID: (context) => StartingPage(),
-            ChatScreen.ROUTE_ID: (context) => ChatScreen()
-          },
+          routes: AppRoutes.routes,
         );
       }),
     );
