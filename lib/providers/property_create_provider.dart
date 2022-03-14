@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:albify/models/property_model.dart';
 import 'package:albify/services/database_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PropertyCreateProvider extends ChangeNotifier {
   final DatabaseService databaseService;
@@ -55,7 +57,8 @@ class PropertyCreateProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<bool> submit() async {
+  // Future<bool> submit(List<XFile> images) async {
+  Future<bool> submit(List<PlatformFile> images) async {
     await changeLoadingStatus();
     await Future.delayed(Duration(milliseconds: 500));
 
@@ -72,7 +75,8 @@ class PropertyCreateProvider extends ChangeNotifier {
         newlyBuilt: this.newlyBuilt,
         forSale: this.forSale,
         photoUrls: []
-      )
+      ),
+      images
     );
     changeLoadingStatus();
     return value;
