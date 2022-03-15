@@ -12,7 +12,6 @@ import 'package:albify/widgets/rounded_dropdown_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class AddPropertyDialog extends StatefulWidget {
@@ -22,7 +21,6 @@ class AddPropertyDialog extends StatefulWidget {
 
 class _AddPropertyDialogState extends State<AddPropertyDialog> {
   final _addPropertyFormKey = GlobalKey<FormState>();
-  List<XFile>? _images = [];
   List<PlatformFile> _imageFiles = [];
 
   @override
@@ -32,7 +30,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
       create: (_) => PropertyCreateProvider(Provider.of<DatabaseService>(context, listen: false)),
       builder: (context, child) {
         final _propertyCreateProvider = Provider.of<PropertyCreateProvider>(context, listen: true);
-        final _picker = ImagePicker();
         print(getPreferredSize(_size));
         return AlertDialog(
           scrollable: true,
@@ -116,21 +113,8 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       outlined: true,
                       onPressed: () async {
                         selectImages();
-                        // try {
-                        //   final List<XFile>? images = await _picker.pickMultiImage(
-                        //     maxWidth: 3000,
-                        //     maxHeight: 3000,
-                        //   );
-                          
-                        //   setState(() {
-                        //     _images = images;
-                        //   });
-                        // } catch (e) {
-                        //   print(e);
-                        // }
                       },
                     ),
-                    // _images!.isNotEmpty ?
                     _imageFiles.isNotEmpty ?
                       LimitedBox(
                         maxWidth: getPreferredSize(_size),
@@ -144,7 +128,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                           child: GridView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
-                            // itemCount: _images!.length,
                             itemCount: _imageFiles.length,
                             primary: true,
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -158,16 +141,11 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                                 children: [
                                   Container(
                                     child: kIsWeb ? 
-                                      // Image.network(
-                                      //   _images![index].path,
-                                      //   fit: BoxFit.cover,
-                                      // ) :
                                       Image.memory(
                                         _imageFiles[index].bytes!,
                                         fit: BoxFit.cover,
                                       ) :
                                       Image.file(
-                                        // File(_images![index].path),
                                         File(_imageFiles[index].path!),
                                         fit: BoxFit.cover,
                                       ),
@@ -178,7 +156,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                                       icon: Icon(Icons.delete),
                                       onPressed: () {
                                         setState(() {
-                                          // _images!.removeAt(index);
                                           _imageFiles.removeAt(index);
                                         });
                                       },
@@ -187,92 +164,9 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                                 ]
                               )
                           ),
-                          // child: ListView.builder(
-                          //   shrinkWrap: true,
-                          //   itemCount: _images!.length,
-                          //   itemBuilder: (context, index) =>
-                          //     Container(
-                          //       margin: EdgeInsets.all(8),
-                          //       child: Stack(
-                          //         children: [
-                          //           Container(
-                          //             height: 200,
-                          //             child: kIsWeb ?
-                          //               Image.network(
-                          //                 _images![index].path,
-                          //                 fit: BoxFit.cover,
-                          //               ) :
-                          //               Image.file(
-                          //                 File(_images![index].path),
-                          //                 fit: BoxFit.cover,
-                          //               ),
-                          //           ),
-                          //           Container(
-                          //             alignment: Alignment.topRight,
-                          //             child: IconButton(
-                          //               icon: Icon(Icons.delete),
-                          //               onPressed: () {
-                          //                 setState(() {
-                          //                   _images!.removeAt(index);
-                          //                 });
-                          //               },
-                          //             ),
-                          //           )
-                          //         ]
-                          //       ),
-                          //     )
-                          // ),
                         ),
                       ) :
                       Container(),
-                    /*
-                    ChangeNotifierProvider(
-                      create: (_) => ImageChooseProvider(),
-                      builder: (context, child) {
-                        final _imageChooseProvider = Provider.of<ImageChooseProvider>(context);
-                        final _picker = ImagePicker();
-                        return Column(
-                          children: [
-                            RoundedButton(
-                              text: 'Choose images',
-                              outlined: true,
-                              onPressed: () async {
-                                try {
-                                  final List<XFile>? images = await _picker.pickMultiImage(
-                                    maxWidth: 3000,
-                                    maxHeight: 3000,
-                                  );
-                                  
-                                  if (images != null) {
-                                    _imageChooseProvider.selectImages(images);
-                                  }
-                                } catch (e) {
-                                  print(e);
-                                }
-                              },
-                            ),
-                            Utils.addVerticalSpace(8),
-                            Selector<ImageChooseProvider, List<XFile?>>(
-                              selector: (_, imageChooseProvider) => imageChooseProvider.selectedImages,
-                              builder: (_, selectedImages, __) => selectedImages.length == 0 ?
-                                Container() :
-                                GridView.builder(
-                                  itemCount: selectedImages.length,
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 1
-                                  ),
-                                  itemBuilder: (context, index) =>
-                                    kIsWeb ? 
-                                      Image.network(selectedImages[index]!.path) :
-                                      Image.file(File(selectedImages[index]!.path))
-                                ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    */
                     Utils.addVerticalSpace(16),
                     Selector<PropertyCreateProvider, bool>(
                       selector: (_, propertyCreateProvider) => propertyCreateProvider.isLoading,
@@ -284,11 +178,9 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                             text: 'Add property',
                             onPressed: () async {
                               if (_addPropertyFormKey.currentState!.validate()) {
-                                // if (_images == null || _images!.isEmpty) {
                                 if (_imageFiles.isEmpty) {
                                   Utils.showToast('At least one image must be selected');
                                 } else {
-                                  // bool value = await _propertyCreateProvider.submit(_images!);
                                   bool value = await _propertyCreateProvider.submit(_imageFiles);
                                   Navigator.pop(context, value);
                                 }

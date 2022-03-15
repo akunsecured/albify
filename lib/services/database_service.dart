@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/user_model.dart';
@@ -7,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -81,7 +78,6 @@ class DatabaseService {
     return properties;
   }
 
-  // Future<bool> addProperty(PropertyModel property, List<XFile> images) async {
   Future<bool> addProperty(PropertyModel property, List<PlatformFile> images) async {
     WriteBatch _batch = _firestore.batch();
     try {
@@ -115,7 +111,6 @@ class DatabaseService {
     return true;
   }
 
-  // Future<String> uploadPropertyImage(String propertyID, XFile image) async {
   Future<String> uploadPropertyImage(String propertyID, PlatformFile image) async {
     String path = DateTime.now().millisecondsSinceEpoch.toString();
     String type = image.name.split('.').last;
@@ -125,14 +120,12 @@ class DatabaseService {
       .child('$uid/properties/$propertyID/$path.$type');
 
     var task = reference
-      // .putData(await image.readAsBytes());
       .putData(image.bytes!);
 
     final snapshot = await task.whenComplete(() {});
     return await snapshot.ref.getDownloadURL();
   }
 
-  // Future<List<String>> uploadPropertyImages(String propertyID, List<XFile> images) async {
   Future<List<String>> uploadPropertyImages(String propertyID, List<PlatformFile> images) async {
     return await Future.wait(
       images.map((image) => uploadPropertyImage(propertyID, image))
