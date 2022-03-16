@@ -1,5 +1,6 @@
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
+import 'package:albify/models/property_search_models.dart';
 import 'package:albify/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -65,6 +66,57 @@ class DatabaseService {
     try {
       var querySnapshot = 
         await propertiesRef.get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        properties = querySnapshot.docs.map(
+          (doc) => PropertyModel.fromDocumentSnapshot(doc)
+          ).toList();
+      }
+    } on FirebaseException catch (e) {
+      print(e.message);
+      return [];
+    }
+    return properties;
+  }
+
+  Future<List<PropertyModel>> findProperties({
+    PropertyType? type,
+    RoomsBetween? roomsBetween,
+    PriceBetween? priceBetween,
+    FloorspaceBetween? floorspaceBetween,
+    bool? newlyBuilt,
+    bool? forSale
+  }) async {
+    List<PropertyModel> properties = [];
+    try {
+      Query query = propertiesRef;
+
+      if (type != null) {
+        query = query.where('type', isEqualTo: type.index);
+      }
+
+      if (roomsBetween != null) {
+        query = query.where('rooms', isGreaterThanOrEqualTo: roomsBetween.from).where('rooms', isLessThanOrEqualTo: roomsBetween.to);
+      }
+
+      if (priceBetween != null) {
+        query = query.where('price', isGreaterThanOrEqualTo: priceBetween.from).where('price', isLessThanOrEqualTo: priceBetween.to);
+      }
+
+      if (floorspaceBetween != null) {
+        query = query.where('floorspace', isGreaterThanOrEqualTo: floorspaceBetween.from).where('floorspace', isLessThanOrEqualTo: floorspaceBetween.to);
+      }
+
+      if (newlyBuilt != null) {
+        query = query.where('newlyBuilt', isEqualTo: newlyBuilt);
+      }
+
+      if (forSale != null) {
+        query = query.where('forSale', isEqualTo: forSale);
+      }
+
+      var querySnapshot = 
+        await query.get();
 
       if (querySnapshot.docs.isNotEmpty) {
         properties = querySnapshot.docs.map(

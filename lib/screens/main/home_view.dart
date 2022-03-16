@@ -1,4 +1,7 @@
+import 'package:albify/animations/custom_page_route_builder.dart';
+import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/models/property_model.dart';
+import 'package:albify/screens/search_result/search_result_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_text.dart';
@@ -23,7 +26,14 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
         title: RoundedButton(
           text: 'Search',
-          onPressed: () {},
+          onPressed: () =>
+            Navigator.push(
+              context,
+              CustomPageRouteBuilder(
+                child: SearchResultPage(),
+                direction: SlideDirections.FROM_DOWN
+              )
+            ),
           primary: Colors.amber,
           width: MediaQuery.of(context).size.width / 4,
         ),
