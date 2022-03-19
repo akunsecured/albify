@@ -5,8 +5,7 @@ class PropertyModel {
   String? ownerID;
   PropertyLocation location;
   PropertyType type;
-  int rooms, price;
-  double floorspace;
+  int rooms, price, floorspace;
   bool newlyBuilt, forSale;
   List photoUrls;
 

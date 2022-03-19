@@ -40,7 +40,9 @@ dependencies:
   firebase_storage: ^10.2.9
   cloud_firestore_platform_interface: ^5.5.1
   file_picker: ^4.5.1
-  flutter_carousel_slider: ^1.0.8
+  carousel_slider: ^4.0.0
+  smooth_page_indicator: ^1.0.0+2
+  responsive_grid: ^2.0.0
 
 dev_dependencies:
   flutter_test:

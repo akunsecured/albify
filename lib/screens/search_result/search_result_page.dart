@@ -4,9 +4,11 @@ import 'package:albify/models/property_search_models.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_text.dart';
+import 'package:albify/widgets/property_card.dart';
 import 'package:albify/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_grid/responsive_grid.dart';
 
 class SearchResultPage extends StatefulWidget {
   @override
@@ -16,11 +18,12 @@ class SearchResultPage extends StatefulWidget {
 class _SearchResultPageState extends State<SearchResultPage> {
   late Future<List<PropertyModel>> future;
   SearchSort sortingMode = SearchSort.PRICE_ASCENDING;
+  late Size _size;
 
   @override
   Widget build(BuildContext context) {
     future = Provider.of<DatabaseService>(context).findProperties();
-
+    _size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -31,6 +34,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
           outlined: false,
           primary: Colors.grey[400],
           onPressed: () {},
+          width: getPreferredSize(_size),
         ),
         actions: [
           IconButton(
@@ -124,12 +128,21 @@ class _SearchResultPageState extends State<SearchResultPage> {
 
   Widget buildProperties(List<PropertyModel> properties) {
     sortProperties(properties);
-    return ListView.builder(
-      itemCount: properties.length,
-      itemBuilder: (context, index) =>
-        ListTile(
-          title: MyText(text: properties[index].id!),
-        )
+    return SingleChildScrollView(
+      child: Container(
+        child: ResponsiveGridRow(
+          children: properties.map(
+            (property) => ResponsiveGridCol(
+              xs: 12,
+              sm: 12,
+              md: 6,
+              lg: 6,
+              xl: 4,
+              child: PropertyCard(property)
+            )
+          ).toList()
+        ),
+      ),
     );
   }
 
@@ -177,10 +190,12 @@ class _SearchResultPageState extends State<SearchResultPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS))
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
       ),
     );
   }

@@ -69,7 +69,7 @@ class PropertyCreateProvider extends ChangeNotifier {
         type: PropertyType.values[this.propertyTypeValue],
         rooms: int.parse(_roomsController.text),
         price: int.parse(_priceController.text),
-        floorspace: double.parse(_floorspaceController.text),
+        floorspace: int.parse(_floorspaceController.text),
         newlyBuilt: this.newlyBuilt,
         forSale: this.forSale,
         photoUrls: []
