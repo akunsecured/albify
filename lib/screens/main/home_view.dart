@@ -39,54 +39,54 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       body: Container(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: Provider.of<DatabaseService>(context, listen: false).propertiesStream(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Align(
-                alignment: Alignment.center,
-                child: MyText(
-                  text: "Error"
-                ),
-              );
-            }
+        // child: StreamBuilder<QuerySnapshot>(
+        //   stream: Provider.of<DatabaseService>(context, listen: false).propertiesStream(),
+        //   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        //     if (snapshot.hasError) {
+        //       return Align(
+        //         alignment: Alignment.center,
+        //         child: MyText(
+        //           text: "Error"
+        //         ),
+        //       );
+        //     }
 
-            if (
-              snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting
-            ) {
-              return Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  color: AppStyle.appColorGreen,
-                )
-              );
-            }
+        //     if (
+        //       snapshot.connectionState == ConnectionState.none ||
+        //       snapshot.connectionState == ConnectionState.waiting
+        //     ) {
+        //       return Align(
+        //         alignment: Alignment.center,
+        //         child: CircularProgressIndicator(
+        //           color: AppStyle.appColorGreen,
+        //         )
+        //       );
+        //     }
 
             
-            List<PropertyModel> properties = 
-              snapshot.data!.docs.map(
-                (doc) => PropertyModel.fromDocumentSnapshot(doc)
-              ).toList();
+        //     List<PropertyModel> properties = 
+        //       snapshot.data!.docs.map(
+        //         (doc) => PropertyModel.fromDocumentSnapshot(doc)
+        //       ).toList();
             
-            if (properties.length == 0) {
-              return Align(
-                alignment: Alignment.center,
-                child: MyText(
-                  text: 'There are no properties in the database'
-                ),
-              ); 
-            }
+        //     if (properties.length == 0) {
+        //       return Align(
+        //         alignment: Alignment.center,
+        //         child: MyText(
+        //           text: 'There are no properties in the database'
+        //         ),
+        //       ); 
+        //     }
 
-            return ListView.builder(
-              itemCount: properties.length,
-              itemBuilder: (context, index) =>
-                ListTile(
-                  title: MyText(text: properties[index].id!),
-                )
-            );
-          },
-        )
+        //     return ListView.builder(
+        //       itemCount: properties.length,
+        //       itemBuilder: (context, index) =>
+        //         ListTile(
+        //           title: MyText(text: properties[index].id!),
+        //         )
+        //     );
+        //   },
+        // )
       ),
     );
   }

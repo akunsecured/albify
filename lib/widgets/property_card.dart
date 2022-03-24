@@ -1,13 +1,13 @@
 import 'dart:ui';
 
+import 'package:albify/animations/custom_page_route_builder.dart';
+import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/common/constants.dart';
-import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
-import 'package:albify/themes/app_style.dart';
+import 'package:albify/screens/property/property_page.dart';
+import 'package:albify/widgets/my_carousel_slider.dart';
 import 'package:albify/widgets/my_text.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class PropertyCard extends StatefulWidget {
   final PropertyModel property;
@@ -26,7 +26,14 @@ class _PropertyCardState extends State<PropertyCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => print(widget.property.id),
+      onTap: () => 
+        Navigator.push(
+          context,
+          CustomPageRouteBuilder(
+            child: PropertyPage(property: widget.property),
+            direction: SlideDirections.FROM_DOWN
+          )
+        ),
       child: Card(
         margin: EdgeInsets.all(8.0),
         shape: RoundedRectangleBorder(
@@ -34,29 +41,7 @@ class _PropertyCardState extends State<PropertyCard> {
         ),
         child: Column(
           children: [
-            CarouselSlider.builder(
-              options: CarouselOptions(
-                scrollDirection: Axis.horizontal,
-                height: 200,
-                viewportFraction: 1,
-                autoPlay: widget.property.photoUrls.length > 1,
-                scrollPhysics: widget.property.photoUrls.length > 1 ? 
-                  AlwaysScrollableScrollPhysics() :
-                  NeverScrollableScrollPhysics(),
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                }
-              ),
-              itemCount: widget.property.photoUrls.length,
-              itemBuilder: (BuildContext context, int index, int realIndex) {
-                String url = widget.property.photoUrls[index];
-                return buildImage(url, index);
-              },
-            ),
-            Utils.addVerticalSpace(16),
-            buildIndicator(),
+            MyCarouselSlider(urls: widget.property.photoUrls),
             Container(
               margin: EdgeInsets.all(16.0),
               child: Column(
@@ -129,31 +114,4 @@ class _PropertyCardState extends State<PropertyCard> {
       ),
     );
   }
-
-  Widget buildImage(url, index) =>
-    ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(RADIUS),
-        topRight: Radius.circular(RADIUS)
-      ),
-      child: Container(
-        color: Colors.grey,
-        width: double.infinity,
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  
-  Widget buildIndicator() =>
-    AnimatedSmoothIndicator(
-      activeIndex: _selectedIndex,
-      count: widget.property.photoUrls.length,
-      effect: SlideEffect(
-        dotHeight: 8,
-        dotWidth: 8,
-        activeDotColor: AppStyle.appColorGreen,
-      ),
-    );
 }

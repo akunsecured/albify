@@ -13,6 +13,8 @@ class CircularTextFormField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
+  final int? maxLines;
+  final int? maxLength;
 
   CircularTextFormField({
     required this.hintText,
@@ -25,7 +27,9 @@ class CircularTextFormField extends StatefulWidget {
     this.matchWith,
     this.textInputAction = TextInputAction.next,
     this.focusNode,
-    this.nextFocusNode
+    this.nextFocusNode,
+    this.maxLines = 1,
+    this.maxLength
   });
 
   set matchWith(String? value) => matchWith = value;
@@ -79,6 +83,9 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
           FocusScope.of(context).requestFocus(widget.nextFocusNode);
         }
       },
+      minLines: 1,
+      maxLines: widget.maxLines,
+      maxLength: widget.maxLength,
     );
   }
 }

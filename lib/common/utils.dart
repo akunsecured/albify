@@ -80,6 +80,12 @@ class Utils {
     return null;
   }
 
+  static validateDescription(String? value) {
+    if (value == null || value.isEmpty)
+      return 'Description must be written';
+    return null;
+  }
+
   static enumToString(PropertyType enumValue) {
     var temp = enumValue.toString().split('.')[1];
     return temp.substring(0, 1) + temp.toLowerCase().substring(1);

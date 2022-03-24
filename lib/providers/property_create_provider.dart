@@ -15,17 +15,19 @@ class PropertyCreateProvider extends ChangeNotifier {
   bool newlyBuilt = false;
   int propertyTypeValue = 0;
 
-  late final TextEditingController _priceController, _roomsController, _floorspaceController;
+  late final TextEditingController _priceController, _roomsController, _floorspaceController, _descriptionController;
 
   PropertyCreateProvider(this.databaseService) {
     _priceController = TextEditingController();
     _roomsController = TextEditingController();
     _floorspaceController = TextEditingController();
+    _descriptionController = TextEditingController();
   }
 
   TextEditingController get priceController => _priceController;
   TextEditingController get roomsController => _roomsController;
   TextEditingController get floorspaceController => _floorspaceController;
+  TextEditingController get descriptionController => _descriptionController;
 
   changeLoadingStatus() async {
     isLoading = !isLoading;
@@ -52,6 +54,7 @@ class PropertyCreateProvider extends ChangeNotifier {
     _priceController.dispose();
     _roomsController.dispose();
     _floorspaceController.dispose();
+    _descriptionController.dispose();
     isDisposed = true;
     super.dispose();
   }
@@ -72,7 +75,8 @@ class PropertyCreateProvider extends ChangeNotifier {
         floorspace: int.parse(_floorspaceController.text),
         newlyBuilt: this.newlyBuilt,
         forSale: this.forSale,
-        photoUrls: []
+        photoUrls: [],
+        description: _descriptionController.text
       ),
       images
     );

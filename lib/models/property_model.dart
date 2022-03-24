@@ -8,6 +8,7 @@ class PropertyModel {
   int rooms, price, floorspace;
   bool newlyBuilt, forSale;
   List photoUrls;
+  String description;
 
   PropertyModel({
     this.id,
@@ -19,7 +20,8 @@ class PropertyModel {
     required this.floorspace,
     required this.newlyBuilt,
     required this.forSale,
-    required this.photoUrls
+    required this.photoUrls,
+    required this.description
   });
 
   factory PropertyModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
@@ -34,7 +36,8 @@ class PropertyModel {
       floorspace: data['floorspace'] ?? -1,
       newlyBuilt: data['newlyBuilt'] ?? false,
       forSale: data['forSale'] ?? false,
-      photoUrls: data['photoUrls'] ?? []
+      photoUrls: data['photoUrls'] ?? [],
+      description: data['description'] ?? ''
     );
   }
 
@@ -47,7 +50,8 @@ class PropertyModel {
     'floorspace': floorspace,
     'newlyBuilt': newlyBuilt,
     'forSale': forSale,
-    'photoUrls': photoUrls
+    'photoUrls': photoUrls,
+    'description': description
   };
 }
 

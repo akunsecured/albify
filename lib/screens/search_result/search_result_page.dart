@@ -21,8 +21,13 @@ class _SearchResultPageState extends State<SearchResultPage> {
   late Size _size;
 
   @override
+  void initState() {
+    future = Provider.of<DatabaseService>(context, listen: false).findProperties();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    future = Provider.of<DatabaseService>(context).findProperties();
     _size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(

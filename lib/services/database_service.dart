@@ -184,7 +184,14 @@ class DatabaseService {
     );
   }
 
-  Stream<UserModel?> userStream() {
+  Stream<UserModel?> userStream({ String? userID }) {
+    if (userID == null) userID = uid;
+    if (userID != uid)
+      return _firestore
+        .collection("users")
+        .doc(userID)
+        .snapshots()
+        .map((snapshot) => UserModel.fromDocumentSnapshot(snapshot));
     if (!_firebaseAuth.currentUser!.isAnonymous)
       return _firestore
         .collection("users")

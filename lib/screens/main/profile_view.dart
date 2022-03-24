@@ -9,7 +9,6 @@ import 'package:albify/widgets/add_property_dialog.dart';
 import 'package:albify/widgets/my_alert_dialog.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:albify/widgets/rounded_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,21 +16,29 @@ import 'package:provider/provider.dart';
 
 
 class ProfileView extends StatefulWidget {
+  final String? userID;
+
+  ProfileView({
+    this.userID
+  });
+
   @override
   _ProfileViewState createState() => _ProfileViewState();
 }
 
 class _ProfileViewState extends State<ProfileView> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  late final Future<UserModel?> future;
+  late final User currentUser;
   late final Stream<UserModel?> stream;
+  late bool isOwnProfile = false;
 
   @override
   void initState() {
     super.initState();
-    if (!_firebaseAuth.currentUser!.isAnonymous) {
-      future = Provider.of<DatabaseService>(context, listen: false).getUserData();
-      stream = Provider.of<DatabaseService>(context, listen: false).userStream();
+    currentUser = _firebaseAuth.currentUser!;
+    isOwnProfile = currentUser.uid == widget.userID || widget.userID == null;
+    if (!(currentUser.isAnonymous && isOwnProfile)) {
+      stream = Provider.of<DatabaseService>(context, listen: false).userStream(userID: widget.userID);
     }
   }
 
@@ -39,7 +46,7 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     final Size _size = MediaQuery.of(context).size;
 
-    return FirebaseAuth.instance.currentUser!.isAnonymous ?
+    return (currentUser.isAnonymous && isOwnProfile) ?
       Center(child: LoginIsNeeded()) : 
       Scaffold(
         appBar: AppBar(
@@ -74,54 +81,6 @@ class _ProfileViewState extends State<ProfileView> {
             return buildProfileView(userModel, _size);
           },
         )
-        /*
-        body: FutureBuilder(
-          future: future,
-          builder: (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
-            if (snapshot.hasError) {
-              return Align(
-                alignment: Alignment.center,
-                child: MyText(
-                  text: 'Error',
-                ),
-              );
-            }
-    
-            if (
-              snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting ||
-              snapshot.connectionState == ConnectionState.active
-            ) {
-              return Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  color: AppStyle.appColorGreen,
-                ),
-              );
-            }
-            if (snapshot.connectionState == ConnectionState.done) {
-              print('data read');
-              if (snapshot.data != null) {
-                UserModel userModel = snapshot.data!;
-                return buildProfileView(userModel, _size);
-              } else {
-                return Align(
-                  alignment: Alignment.center,
-                  child: MyText(
-                    text: 'No data',
-                  ),
-                );
-              }
-            }
-            return Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(
-                color: AppStyle.appColorGreen,
-              ),
-            );
-          }
-        ),
-        */
       );
   }
 

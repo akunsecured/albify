@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_grid/responsive_grid.dart';
 
 class AddPropertyDialog extends StatefulWidget {
   @override
@@ -108,6 +109,15 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       ),
                     ),
                     Utils.addVerticalSpace(8),
+                    CircularTextFormField(
+                      hintText: 'Write about the property ...',
+                      icon: Icon(Icons.list_alt),
+                      validateFun: Utils.validateDescription,
+                      textEditingController: _propertyCreateProvider.descriptionController,
+                      maxLines: null,
+                      maxLength: 500,
+                    ),
+                    Utils.addVerticalSpace(8),
                     RoundedButton(
                       text: 'Choose images',
                       outlined: true,
@@ -116,57 +126,51 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       },
                     ),
                     _imageFiles.isNotEmpty ?
-                      LimitedBox(
-                        maxWidth: getPreferredSize(_size),
-                        maxHeight: getGridContainerHeight(_size),
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            top: 8
-                          ),
-                          width: getPreferredSize(_size),
-                          height: getGridContainerHeight(_size),
-                          child: GridView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: _imageFiles.length,
-                            primary: true,
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: isWebWidth(_size) ? 2 : 1,
-                              childAspectRatio: 1.0,
-                              mainAxisSpacing: 4,
-                              crossAxisSpacing: 4
+                      Container(
+                        margin: EdgeInsets.only(
+                          top: 8
+                        ),
+                        child: SingleChildScrollView(
+                          child: Container(
+                            child: ResponsiveGridRow(
+                              children: _imageFiles.map(
+                                (image) => ResponsiveGridCol(
+                                  xs: 12,
+                                  sm: 12,
+                                  md: 12,
+                                  lg: 6,
+                                  xl: 6,
+                                  child: Stack(
+                                    children: [
+                                      kIsWeb ?
+                                        Image.memory(
+                                          image.bytes!,
+                                          fit: BoxFit.cover,
+                                        ) :
+                                        Image.file(
+                                          File(image.path!),
+                                          fit: BoxFit.cover
+                                        ),
+                                      Container(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            setState(() {
+                                              _imageFiles.remove(image);
+                                            });
+                                          },
+                                        ),
+                                      )
+                                    ]
+                                  ),
+                                )
+                              ).toList(),
                             ),
-                            itemBuilder: (context, index) =>
-                              Stack(
-                                children: [
-                                  Container(
-                                    child: kIsWeb ? 
-                                      Image.memory(
-                                        _imageFiles[index].bytes!,
-                                        fit: BoxFit.cover,
-                                      ) :
-                                      Image.file(
-                                        File(_imageFiles[index].path!),
-                                        fit: BoxFit.cover,
-                                      ),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        setState(() {
-                                          _imageFiles.removeAt(index);
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ]
-                              )
                           ),
                         ),
-                      ) :
-                      Container(),
+                      )
+                      : Container(),
                     Utils.addVerticalSpace(16),
                     Selector<PropertyCreateProvider, bool>(
                       selector: (_, propertyCreateProvider) => propertyCreateProvider.isLoading,
@@ -205,17 +209,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
         value: value.index
       );
     }).toList();
-
-  getGridContainerHeight(Size size) {
-    int count = isWebWidth(size) ? 2 : 1;
-    print('Count: ' + count.toString());
-    print('Images count: ' + _imageFiles.length.toString());
-    int rowHeight = (_imageFiles.length / count).round();
-    print('Row height: ' + rowHeight.toString());
-    double height = (getPreferredSize(size) - 2 * DIALOG_MARGIN) / count * rowHeight;
-    print('Height: ' + height.toString());
-    return height;
-  }
 
   selectImages() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
