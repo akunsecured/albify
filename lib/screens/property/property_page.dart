@@ -1,14 +1,20 @@
 import 'dart:ui';
 
+import 'package:albify/animations/custom_page_route_builder.dart';
+import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/user_model.dart';
+import 'package:albify/screens/property/property_map_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_carousel_slider.dart';
+import 'package:albify/widgets/my_google_map.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:albify/widgets/rounded_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,9 +32,10 @@ class PropertyPage extends StatefulWidget {
 
 class _PropertyPageState extends State<PropertyPage> {
   late Future<UserModel?> future;
-  late GoogleMapController _mapController;
   late LatLng position;
   late Size _size;
+  UserModel? userModel;
+  late User? currentUser;
 
   @override
   void initState() {
@@ -36,19 +43,29 @@ class _PropertyPageState extends State<PropertyPage> {
       widget.property.location.lat,
       widget.property.location.lng
     );
+    future = Provider.of<DatabaseService>(context, listen: false).getUserData(userID: widget.property.ownerID);
+    currentUser = FirebaseAuth.instance.currentUser;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     this._size = MediaQuery.of(context).size;
-    future = Provider.of<DatabaseService>(context, listen: false).getUserData(userID: widget.property.ownerID);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          // TODO: show the location name
-          'Property'
+          widget.property.location.locationName ?? 'Unknown location'
         ),
+        actions: currentUser!.uid == widget.property.ownerID ?
+          [
+            IconButton(
+              onPressed: () {
+                // TODO: delete property
+              },
+              icon: Icon(Icons.delete)
+            )
+          ] :
+          [],
       ),
       body: FutureBuilder(
         future: this.future,
@@ -78,6 +95,7 @@ class _PropertyPageState extends State<PropertyPage> {
 
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data != null) {
+              userModel = snapshot.data;
               return buildPropertyPage();
             }
             else {
@@ -99,10 +117,6 @@ class _PropertyPageState extends State<PropertyPage> {
         },
       ),
     );
-  }
-
-  void _onMapCreated(GoogleMapController controller) async {
-    _mapController = controller;
   }
 
   Widget buildPropertyPage() =>
@@ -133,31 +147,7 @@ class _PropertyPageState extends State<PropertyPage> {
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // TODO: buttons
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 8
-                        ),
-                        child: RoundedButton(
-                          text: 'Chat',
-                          icon: Icons.chat,
-                          isItNavigation: false,
-                          width: getPreferredSize(_size) / 2.5,
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 8
-                        ),
-                        child: RoundedButton(
-                          text: 'Call',
-                          icon: Icons.call,
-                          isItNavigation: false,
-                          width: getPreferredSize(_size) / 2.5,
-                        ),
-                      ),
-                    ],
+                    children: getActionButtons(),
                   ),
                   Divider(),
                   MyText(
@@ -166,7 +156,6 @@ class _PropertyPageState extends State<PropertyPage> {
                     fontSize: 20,
                     color: Colors.black,
                   ),
-                  // TODO: details
                   Table(
                     children: [
                       TableRow(
@@ -317,31 +306,109 @@ class _PropertyPageState extends State<PropertyPage> {
                       borderRadius: BorderRadius.all(
                         Radius.circular(RADIUS)
                       ),
-                      child: GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: position,
-                          zoom: 15.0
-                        ),
-                        zoomGesturesEnabled: false,
-                        scrollGesturesEnabled: false,
-                        tiltGesturesEnabled: false,
-                        rotateGesturesEnabled: false,
-                        zoomControlsEnabled: false,
-                        markers: [
-                          Marker(
-                            markerId: MarkerId(widget.property.id!),
-                            position: position
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          CustomPageRouteBuilder(
+                            child: PropertyMapPage(property: widget.property),
+                            direction: SlideDirections.FROM_DOWN
                           )
-                        ].toSet(),
+                        ),
+                        child: AbsorbPointer(
+                          child: MyGoogleMap(
+                            center: position,
+                            isNotLocked: false,
+                            markers: [
+                              Marker(
+                                markerId: MarkerId(widget.property.id!),
+                                position: position
+                              )
+                            ].toSet(),
+                          ),
+                        ),
                       ),
                     ),
-                  )
+                  ),
                 ]
               ),
             ),
-            
           ],
         ),
       ),
+    );
+  
+  List<Widget> getActionButtons() {
+    if (kIsWeb) {
+      return currentUser!.uid == widget.property.ownerID ? [
+        buildChatButton(2.5),
+        buildFavoriteButton(2.5)
+      ] :
+      [
+        buildEditButton(2.5)
+      ];
+    } else {
+      var buttons = <Widget>[];
+      if (currentUser!.uid == widget.property.ownerID) {
+        buttons.add(buildEditButton(2.5, iconOnly: true));
+      } else {
+        buttons.add(buildChatButton(4.5, iconOnly: true));
+        if (userModel?.phoneNumber != null && userModel?.phoneNumber != -1) {
+          buttons.add(buildCallButton(4.5, iconOnly: true));
+        }
+        buttons.add(buildFavoriteButton(4.5, iconOnly: true));
+      }
+      return buttons;
+    }
+  }
+
+  Widget buildChatButton(double divider, { bool iconOnly = false }) =>
+    Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: 8
+      ),
+      child: RoundedButton(
+        text: 'Chat',
+        icon: Icons.chat,
+        isItNavigation: false,
+        width: getPreferredSize(_size) / divider,
+        iconOnly: iconOnly,
+      ),
+    );
+
+  Widget buildCallButton(double divider, { bool iconOnly = false }) =>
+    Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: 8
+      ),
+      child: RoundedButton(
+        text: 'Call',
+        icon: Icons.call,
+        isItNavigation: false,
+        width: getPreferredSize(_size) / divider,
+        iconOnly: iconOnly,
+      ),
+    );
+  
+  Widget buildFavoriteButton(double divider, { bool iconOnly = false }) =>
+    Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: 8
+      ),
+      child: RoundedButton(
+        text: 'Favorites',
+        icon: Icons.star,
+        isItNavigation: false,
+        width: getPreferredSize(_size) / divider,
+        iconOnly: iconOnly,
+      ),
+    );
+
+  Widget buildEditButton(double divider, { bool iconOnly = false }) =>
+    RoundedButton(
+      text: 'Edit',
+      icon: Icons.edit,
+      isItNavigation: false,
+      width: getPreferredSize(_size) / divider,
+      iconOnly: iconOnly,
     );
 }

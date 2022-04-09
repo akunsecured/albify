@@ -4,7 +4,7 @@ class UserModel {
   String id, name;
   String? avatarUrl, contactEmail;
   int? phoneNumber;
-  List<String>? propertyIDs;
+  List? propertyIDs;
 
   UserModel({
     required this.id,

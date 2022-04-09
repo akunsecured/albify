@@ -25,7 +25,7 @@ class _PropertyCardState extends State<PropertyCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () => 
         Navigator.push(
           context,

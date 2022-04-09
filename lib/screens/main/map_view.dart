@@ -1,6 +1,7 @@
 import 'package:albify/models/property_model.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
+import 'package:albify/widgets/my_google_map.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,69 +16,57 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   SharedPreferences? _sharedPreferences;
-  late GoogleMapController _mapController;
-
   LatLng? _center;
-
-  void _onMapCreated(GoogleMapController controller) async {
-    _mapController = controller;
-    _mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-        target: _center!,
-        zoom: 15.0
-      )
-    ));
-  }
   
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Align(
         alignment: Alignment.center,
-        child: FutureBuilder(
-          future: buildGoogleMap(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasError) {
-              return Align(
-                alignment: Alignment.center,
-                child: MyText(
-                  text: 'Error'
-                ),
-              );
-            }
+        child: MyGoogleMap(),
+        // child: FutureBuilder(
+        //   future: buildGoogleMap(),
+        //   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        //     if (snapshot.hasError) {
+        //       return Align(
+        //         alignment: Alignment.center,
+        //         child: MyText(
+        //           text: 'Error'
+        //         ),
+        //       );
+        //     }
 
-            if (
-              snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting ||
-              snapshot.connectionState == ConnectionState.active
-            ) {
-              return Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  color: AppStyle.appColorGreen,
-                )
-              );
-            }
+        //     if (
+        //       snapshot.connectionState == ConnectionState.none ||
+        //       snapshot.connectionState == ConnectionState.waiting ||
+        //       snapshot.connectionState == ConnectionState.active
+        //     ) {
+        //       return Align(
+        //         alignment: Alignment.center,
+        //         child: CircularProgressIndicator(
+        //           color: AppStyle.appColorGreen,
+        //         )
+        //       );
+        //     }
 
-            if (snapshot.connectionState == ConnectionState.done) {
-              return GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: snapshot.data['location'] ?? _center!,
-                  zoom: 15.0
-                ),
-                markers: snapshot.data['markers'] ?? Set(),
-              );
-            }
+        //     if (snapshot.connectionState == ConnectionState.done) {
+        //       return GoogleMap(
+        //         initialCameraPosition: CameraPosition(
+        //           target: snapshot.data['location'] ?? _center!,
+        //           zoom: 15.0
+        //         ),
+        //         markers: snapshot.data['markers'] ?? Set(),
+        //       );
+        //     }
             
-            return Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(
-                color: AppStyle.appColorGreen,
-              )
-            );
-          }
-        ),
+        //     return Align(
+        //       alignment: Alignment.center,
+        //       child: CircularProgressIndicator(
+        //         color: AppStyle.appColorGreen,
+        //       )
+        //     );
+        //   }
+        // ),
       ),
     );
   }
@@ -118,8 +107,8 @@ class _MapViewState extends State<MapView> {
         // We have the user's location
         return center;
       }
-    } catch (e) {
-      print (e);
+    } on Exception catch (e) {
+      print(e.toString());
       // Could not get the location
       return null;
     }

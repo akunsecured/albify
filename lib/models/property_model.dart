@@ -58,21 +58,25 @@ class PropertyModel {
 class PropertyLocation {
   double lat;
   double lng;
+  String? locationName;
 
   PropertyLocation(
     this.lat,
-    this.lng
+    this.lng,
+    this.locationName
   );
 
   factory PropertyLocation.fromMap(Map<String, dynamic> map) =>
     PropertyLocation(
       map['lat'] ?? -1,
-      map['lng'] ?? -1
+      map['lng'] ?? -1,
+      map['locationName'] ?? ''
     );
   
   Map<String, dynamic> toMap() => {
     'lat': lat,
-    'lng': lng
+    'lng': lng,
+    'locationName': locationName
   };
 }
 

@@ -14,6 +14,9 @@ class PropertyCreateProvider extends ChangeNotifier {
   bool forSale = false;
   bool newlyBuilt = false;
   int propertyTypeValue = 0;
+  String? locationName;
+  List<PlatformFile> imageFiles = [];
+  PropertyLocation? propertyLocation;
 
   late final TextEditingController _priceController, _roomsController, _floorspaceController, _descriptionController;
 
@@ -49,6 +52,26 @@ class PropertyCreateProvider extends ChangeNotifier {
     if (!isDisposed) notifyListeners();
   }
 
+  changeLocationName(String? value) {
+    locationName = value;
+    if (!isDisposed) notifyListeners();
+  }
+
+  changeImages(List<PlatformFile> values) {
+    imageFiles = values;
+    if (!isDisposed) notifyListeners();
+  }
+
+  removeImage(PlatformFile value) {
+    imageFiles.remove(value);
+    if (!isDisposed) notifyListeners();
+  }
+
+  changeLocation(PropertyLocation value) {
+    propertyLocation = value;
+    if (!isDisposed) notifyListeners();
+  }
+
   @override
   void dispose() {
     _priceController.dispose();
@@ -59,16 +82,13 @@ class PropertyCreateProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<bool> submit(List<PlatformFile> images) async {
+  Future<bool> submit() async {
     await changeLoadingStatus();
     await Future.delayed(Duration(milliseconds: 500));
 
     bool value = await databaseService.addProperty(
       PropertyModel(
-        location: PropertyLocation(
-          47.4806695 + (Random().nextDouble() / 100),
-          19.0561783 + (Random().nextDouble() / 100)
-        ),
+        location: propertyLocation!,
         type: PropertyType.values[this.propertyTypeValue],
         rooms: int.parse(_roomsController.text),
         price: int.parse(_priceController.text),
@@ -78,7 +98,7 @@ class PropertyCreateProvider extends ChangeNotifier {
         photoUrls: [],
         description: _descriptionController.text
       ),
-      images
+      imageFiles
     );
     changeLoadingStatus();
     return value;

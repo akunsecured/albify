@@ -149,7 +149,7 @@ class DatabaseService {
       _batch.update(
         usersRef.doc(ownerID),
         {
-          "properties": FieldValue.arrayUnion([
+          "propertyIDs": FieldValue.arrayUnion([
             newDocument.id
           ])
         }
@@ -246,5 +246,21 @@ class DatabaseService {
     } on FirebaseException catch (e) {
       Utils.showToast(e.message.toString());
     }
+  }
+
+  Future<bool> editProfile(UserModel userModel) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      _batch.update(
+        usersRef.doc(userModel.id),
+        userModel.toMap()
+      );
+
+      await _batch.commit();
+    } on FirebaseException catch (e) {
+      print(e.message);
+      return false;
+    }
+    return true;
   }
 }

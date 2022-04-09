@@ -67,7 +67,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                     return Align(
                       alignment: Alignment.center,
                       child: MyText(
-                        text: "Has data"
+                        text: snapshot.data!.map((p) => p.id).toString()
                       )
                     );
                   }
@@ -98,9 +98,7 @@ class _FavoritesViewState extends State<FavoritesView> {
     final userModel = Provider.of<UserModel>(context, listen: false);
     List<String> favPropertyIDs = [];
 
-    if (userModel != null) {
-      favPropertyIDs = userModel.propertyIDs ?? [];
-    }
+    favPropertyIDs = userModel.propertyIDs?.cast<String>() ?? [];
 
     return Provider.of<DatabaseService>(context, listen: false).getProperties(favPropertyIDs);
   }

@@ -12,16 +12,18 @@ class RoundedButton extends StatelessWidget {
   Color? primary;
   final double? width;
   final FocusNode? focusNode;
+  final bool iconOnly;
 
   RoundedButton({
     this.icon,
-    required this.text,
+    this.text = '',
     this.isItNavigation = true,
     this.onPressed,
     this.outlined = false,
     this.primary,
     this.width,
-    this.focusNode
+    this.focusNode,
+    this.iconOnly = false
   }) {
     if (primary == null)
       primary = AppStyle.appColorBlack;
@@ -42,37 +44,41 @@ class RoundedButton extends StatelessWidget {
             ),
           ) :
           (
-            this.isItNavigation ?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(this.icon),
-                    Utils.addHorizontalSpace(10),
-                    Text(
-                      text,
-                      style: TextStyle(
-                        color: Colors.white
-                      ),
-                    )
-                  ],
-                ),
-                Icon(Icons.chevron_right)
-              ],
-            ) :
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(this.icon),
-                Utils.addHorizontalSpace(10),
-                Text(
-                  text,
-                  style: TextStyle(
-                    color: Colors.white
+            this.iconOnly ?
+            Icon(icon) :
+            (
+              this.isItNavigation ?
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(this.icon),
+                      Utils.addHorizontalSpace(10),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          color: Colors.white
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
+                  Icon(Icons.chevron_right)
+                ],
+              ) :
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(this.icon),
+                  Utils.addHorizontalSpace(10),
+                  Text(
+                    text,
+                    style: TextStyle(
+                      color: Colors.white
+                    ),
+                  )
+                ],
+              )
             )
           ),
         style: ElevatedButton.styleFrom(
