@@ -1,11 +1,15 @@
 import 'package:albify/common/constants.dart';
+import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/property_search_models.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
+import 'package:albify/widgets/my_dropdown_menu.dart';
+import 'package:albify/widgets/my_range_slider.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:albify/widgets/property_card.dart';
 import 'package:albify/widgets/rounded_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
@@ -22,7 +26,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
 
   @override
   void initState() {
-    future = Provider.of<DatabaseService>(context, listen: false).findProperties();
+    future = Provider.of<DatabaseService>(context, listen: false)
+        .findProperties();
     super.initState();
   }
 
@@ -38,7 +43,19 @@ class _SearchResultPageState extends State<SearchResultPage> {
           isItNavigation: false,
           outlined: false,
           primary: Colors.grey[400],
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => filterDialog()
+            ).then((value) {
+              if (value != null) {
+                setState(() {
+                  future = Provider.of<DatabaseService>(context, listen: false)
+                      .findProperties(searchQuery: value);
+                });
+              }
+            });
+          },
           width: getPreferredSize(_size),
         ),
         actions: [
@@ -82,13 +99,13 @@ class _SearchResultPageState extends State<SearchResultPage> {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data!.isNotEmpty) {
               print(snapshot.data!.map((property) => property.id).toList());
-              return buildProperties(snapshot.data!); 
+              return buildProperties(snapshot.data!);
             }
             else {
               return Align(
                 alignment: Alignment.center,
                 child: MyText(
-                  text: "Has no data"
+                  text: "No results matched the filter"
                 )
               );
             }
@@ -202,6 +219,131 @@ class _SearchResultPageState extends State<SearchResultPage> {
           children: children,
         ),
       ),
+    );
+  }
+
+  Widget filterDialog() {
+    MyRangeSlider priceSlider = MyRangeSlider(
+      maxValue: 5e7,
+      suffix: 'Ft',
+      title: 'Price',
+    );
+
+    MyRangeSlider roomSlider = MyRangeSlider(
+      maxValue: 5,
+      divisions: 5,
+      title: 'Room size',
+      hasSlideLabel: true,
+    );
+
+    MyRangeSlider floorspaceSlider = MyRangeSlider(
+      maxValue: 200,
+      divisions: 10,
+      title: 'Floorspace',
+      hasSlideLabel: true,
+    );
+
+    int propertyTypeSelected = -1;
+    MyDropdownMenu propertyTypeMenu = MyDropdownMenu(
+        title: 'Preferred property type',
+        options: <int, String>{
+          -1: 'Any'
+        }..addAll(
+            Map.fromIterable(PropertyType.values,
+                key: (propertyType) => propertyType.index,
+                value: (propertyType) => Utils.enumToString(propertyType)
+        )),
+        onChanged: (value) => propertyTypeSelected = value,
+    );
+
+    int newlyBuiltSelected = -1;
+    MyDropdownMenu newlyBuiltMenu = MyDropdownMenu(
+        title: 'Should it be old or newly built?',
+        options: {
+          -1: 'Any',
+          0: 'Old',
+          1: 'Newly built'
+        },
+        onChanged: (value) => newlyBuiltSelected = value,
+    );
+
+    int forSaleSelected = -1;
+    MyDropdownMenu forSaleMenu = MyDropdownMenu(
+        title: 'Should it be for sale or for rent?',
+        options: {
+          -1: 'Any',
+          0: 'For rent',
+          1: 'For sale'
+        },
+        onChanged: (value) => forSaleSelected = value,
+    );
+
+    RoundedButton button = RoundedButton(
+      text: 'Filter',
+      onPressed: () {
+        var newSearchQuery = SearchQuery(
+          priceBetween: PriceBetween(
+              from: (priceSlider.rangeSliderDiscreteValues.start.round() * 5e5).toInt(),
+              to: (priceSlider.rangeSliderDiscreteValues.end.round() * 5e5).toInt()
+          ),
+          roomsBetween: RoomsBetween(
+              from: (roomSlider.rangeSliderDiscreteValues.start.round() * 0.05).toInt(),
+              to: (roomSlider.rangeSliderDiscreteValues.end.round() * 0.05).toInt()
+          ),
+          floorspaceBetween: FloorspaceBetween(
+              from: (floorspaceSlider.rangeSliderDiscreteValues.start.round() * 2),
+              to: (floorspaceSlider.rangeSliderDiscreteValues.end.round() * 2)
+          ),
+          propertyType: propertyTypeSelected == -1 ? null : PropertyType.values[propertyTypeSelected],
+          newlyBuilt: newlyBuiltSelected == -1 ? null : (newlyBuiltSelected == 0 ? false : true),
+          forSale: forSaleSelected == -1 ? null : (forSaleSelected == 0 ? false : true),
+        );
+        print(
+            'Price: ${newSearchQuery.priceBetween!.from} - ${newSearchQuery.priceBetween!.to}'
+        );
+        print(
+            'Room: ${newSearchQuery.roomsBetween!.from} - ${newSearchQuery.roomsBetween!.to}'
+        );
+        print(
+            'Floorspace: ${newSearchQuery.floorspaceBetween!.from} - ${newSearchQuery.floorspaceBetween!.to}'
+        );
+        print(
+            'PropertyType: ${newSearchQuery.propertyType == null ? 'Any' : Utils.enumToString(newSearchQuery.propertyType!)}'
+        );
+        print(
+            'NewlyBuilt: ${newSearchQuery.newlyBuilt == null ? 'Any' : newSearchQuery.newlyBuilt}'
+        );
+        print(
+            'ForSale: ${newSearchQuery.forSale == null ? 'Any' : newSearchQuery.forSale}'
+        );
+        Navigator.pop(context, newSearchQuery);
+      },
+    );
+
+    return Dialog(
+        backgroundColor: Colors.grey[200],
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(RADIUS))
+        ),
+        child: SingleChildScrollView(
+          child: Container(
+            width: getPreferredSize(MediaQuery.of(context).size),
+            child: Column(
+              children: [
+                priceSlider,
+                roomSlider,
+                floorspaceSlider,
+                propertyTypeMenu,
+                newlyBuiltMenu,
+                forSaleMenu,
+                Container(
+                  margin: EdgeInsets.all(16),
+                  child: button
+                )
+              ],
+            ),
+          ),
+        )
     );
   }
 }

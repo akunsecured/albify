@@ -339,7 +339,7 @@ class _PropertyPageState extends State<PropertyPage> {
   
   List<Widget> getActionButtons() {
     if (kIsWeb) {
-      return currentUser!.uid == widget.property.ownerID ? [
+      return currentUser!.uid != widget.property.ownerID ? [
         buildChatButton(2.5),
         buildFavoriteButton(2.5)
       ] :
@@ -394,13 +394,27 @@ class _PropertyPageState extends State<PropertyPage> {
       margin: EdgeInsets.symmetric(
         horizontal: 8
       ),
-      child: RoundedButton(
-        text: 'Favorites',
-        icon: Icons.star,
-        isItNavigation: false,
-        width: getPreferredSize(_size) / divider,
-        iconOnly: iconOnly,
-      ),
+      child: userModel!.favoritePropertyIDs!.cast<String>().contains(widget.property.id) ?
+        RoundedButton(
+          text: 'Add to favorites',
+          icon: Icons.star,
+          isItNavigation: false,
+          width: getPreferredSize(_size) / divider,
+          iconOnly: iconOnly,
+          onPressed: () {
+            // TODO: add to favorites
+          },
+        ) :
+        RoundedButton(
+          text: 'Remove from favorites',
+          icon: Icons.star_outline,
+          isItNavigation: false,
+          width: getPreferredSize(_size) / divider,
+          iconOnly: iconOnly,
+          onPressed: () {
+            // TODO: remove from favorites
+          },
+        ),
     );
 
   Widget buildEditButton(double divider, { bool iconOnly = false }) =>

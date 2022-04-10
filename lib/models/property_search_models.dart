@@ -1,3 +1,23 @@
+import 'package:albify/models/property_model.dart';
+
+class SearchQuery {
+  PropertyType? propertyType;
+  RoomsBetween? roomsBetween;
+  PriceBetween? priceBetween;
+  FloorspaceBetween? floorspaceBetween;
+  bool? newlyBuilt;
+  bool? forSale;
+
+  SearchQuery({
+    this.propertyType,
+    this.roomsBetween,
+    this.priceBetween,
+    this.floorspaceBetween,
+    this.newlyBuilt,
+    this.forSale,
+  });
+}
+
 class RoomsBetween {
   int from;
   int to;
