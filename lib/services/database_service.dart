@@ -1,4 +1,5 @@
 import 'package:albify/common/utils.dart';
+import 'package:albify/models/message_model.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/property_search_models.dart';
 import 'package:albify/models/user_model.dart';
@@ -14,6 +15,10 @@ class DatabaseService {
   late final String? uid;
   late final CollectionReference usersRef;
   late final CollectionReference propertiesRef;
+  late final CollectionReference conversationsRef;
+
+  CollectionReference getConversationMessagesRef(String conversationID) =>
+      conversationsRef.doc(conversationID).collection("messages");
 
   DatabaseService({this.uid}) {
     if (uid == null) {
@@ -22,6 +27,7 @@ class DatabaseService {
 
     usersRef = _firestore.collection('users');
     propertiesRef = _firestore.collection('properties');
+    conversationsRef = _firestore.collection('conversations');
   }
 
   Future<UserModel?> getUserData({String? userID}) async {
@@ -236,5 +242,89 @@ class DatabaseService {
       return false;
     }
     return true;
+  }
+
+  Future<String> findOrCreateConversation(String otherUserID) async {
+    print(uid);
+    print(otherUserID);
+    QuerySnapshot snapshot = await conversationsRef
+        .where('participants', arrayContains: uid!)
+        .get();
+    print(snapshot.docs.length);
+    if (snapshot.docs.isNotEmpty) {
+      var conversation = snapshot.docs.map((doc) => ConversationModel.fromDocumentSnapshot(doc)).toList()..removeWhere((element) => !element.participants.contains(otherUserID))..first;
+
+      return conversation.isNotEmpty ? conversation.first.id! : await _createConversation(otherUserID);
+    } else {
+      return await _createConversation(otherUserID);
+    }
+  }
+
+  Future<String> _createConversation(String otherUserID) async {
+    var newDocument = conversationsRef.doc();
+    var conversationModel = ConversationModel(
+        participants: [
+          uid!, otherUserID
+        ]
+    );
+
+    await conversationsRef.doc(newDocument.id).set(
+        conversationModel.toMap()
+    );
+    return newDocument.id;
+  }
+
+  Stream<QuerySnapshot> conversationsStream() => conversationsRef
+        .where('participants', arrayContains: uid)
+        .orderBy('lastMessage.timeStamp', descending: true)
+        .snapshots();
+
+
+  Stream<QuerySnapshot> messagesStream(String conversationID) =>
+      conversationsRef
+          .doc(conversationID)
+          .collection('messages')
+          .orderBy('timeStamp', descending: true)
+          .snapshots();
+
+  Future<void> sendMessage({ required String conversationID, required String message }) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      var newDocument = getConversationMessagesRef(conversationID).doc();
+      var newMessage = {
+        'sentBy': uid!,
+        'message': message,
+        'sentFromClient': DateTime.now().millisecondsSinceEpoch,
+        'timeStamp': FieldValue.serverTimestamp()
+      };
+
+      _batch.set(
+          getConversationMessagesRef(conversationID).doc(newDocument.id),
+          newMessage
+      );
+
+      _batch.update(conversationsRef.doc(conversationID), {
+        "lastMessage": newMessage
+      });
+
+      await _batch.commit();
+    } on FirebaseException catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<String?> getOtherUserName(String conversationId) async {
+    var conversation = ConversationModel.fromDocumentSnapshot(
+        await conversationsRef.doc(conversationId).get());
+    String? otherUserID;
+    for (String userID in conversation.participants) {
+      if (userID != uid) {
+        otherUserID = userID;
+        break;
+      }
+    }
+    var otherUser = UserModel.fromDocumentSnapshot(
+      await usersRef.doc(otherUserID).get());
+    return otherUser.name;
   }
 }

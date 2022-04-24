@@ -2,6 +2,7 @@ import 'package:albify/models/property_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   static RegExp emailRegExp = RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
@@ -89,5 +90,22 @@ class Utils {
   static enumToString(PropertyType enumValue) {
     var temp = enumValue.toString().split('.')[1];
     return temp.substring(0, 1) + temp.toLowerCase().substring(1);
+  }
+
+  static String formatDate(int dateInInt) {
+    final DateTime now = DateTime.now();
+    final DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
+    final DateTime twoDaysAgo = DateTime.now().subtract(Duration(days: 2));
+    final DateTime oneWeekAgo = DateTime.now().subtract(Duration(days: 7));
+    var date = DateTime.fromMillisecondsSinceEpoch(dateInInt);
+    if (date.isBefore(now) && date.isAfter(yesterday)) {
+      return DateFormat.jm().format(date);
+    } else if (date.isBefore(yesterday) && date.isAfter(twoDaysAgo)) {
+      return 'Yesterday ${DateFormat.jm().format(date)}';
+    } else if (date.isBefore(twoDaysAgo) && date.isAfter(oneWeekAgo)) {
+      return DateFormat.E().add_jm().format(date);
+    } else {
+      return DateFormat.yMMMd().add_jm().format(date);
+    }
   }
 }

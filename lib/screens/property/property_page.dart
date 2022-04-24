@@ -6,6 +6,7 @@ import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/user_model.dart';
+import 'package:albify/screens/chat/chat_screen.dart';
 import 'package:albify/screens/property/property_map_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
@@ -372,6 +373,17 @@ class _PropertyPageState extends State<PropertyPage> {
         isItNavigation: false,
         width: getPreferredSize(_size) / divider,
         iconOnly: iconOnly,
+        onPressed: () async {
+          var conversationID = await Provider.of<DatabaseService>(context, listen: false)
+              .findOrCreateConversation(widget.property.ownerID!);
+          Navigator.push(
+              context,
+              CustomPageRouteBuilder(
+                  child: ChatScreen(conversationId: conversationID),
+                  direction: SlideDirections.FROM_LEFT
+              )
+          );
+        },
       ),
     );
 
@@ -396,7 +408,7 @@ class _PropertyPageState extends State<PropertyPage> {
       ),
       child: userModel!.favoritePropertyIDs!.cast<String>().contains(widget.property.id) ?
         RoundedButton(
-          text: 'Add to favorites',
+          text: 'Favorites',
           icon: Icons.star,
           isItNavigation: false,
           width: getPreferredSize(_size) / divider,
@@ -406,7 +418,7 @@ class _PropertyPageState extends State<PropertyPage> {
           },
         ) :
         RoundedButton(
-          text: 'Remove from favorites',
+          text: 'Favorites',
           icon: Icons.star_outline,
           isItNavigation: false,
           width: getPreferredSize(_size) / divider,

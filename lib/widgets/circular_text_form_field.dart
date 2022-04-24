@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class CircularTextFormField extends StatefulWidget {
   final String hintText;
-  final Icon icon;
-  final Function validateFun;
+  final Icon? icon;
+  final Function? validateFun;
   final TextEditingController textEditingController;
   final TextInputType? inputType;
   final bool? obsecureText;
@@ -18,9 +18,9 @@ class CircularTextFormField extends StatefulWidget {
 
   CircularTextFormField({
     required this.hintText,
-    required this.icon,
     required this.validateFun,
     required this.textEditingController,
+    this.icon,
     this.inputType,
     this.obsecureText,
     this.isConfirm,
@@ -73,7 +73,12 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
           ) :
           null
       ),
-      validator: (value) => widget.validateFun(value),
+      validator: (value) {
+        if (widget.validateFun != null) {
+          return widget.validateFun!(value);
+        }
+        return null;
+      },
       controller: widget.textEditingController,
       textInputAction: widget.textInputAction,
       focusNode: widget.focusNode,

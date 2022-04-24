@@ -9,7 +9,6 @@ import 'package:albify/widgets/my_range_slider.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:albify/widgets/property_card.dart';
 import 'package:albify/widgets/rounded_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
