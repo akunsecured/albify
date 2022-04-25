@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class MessageElement extends StatefulWidget {
   final MessageModel chatElement;
 
-  MessageElement({required this.chatElement});
+  MessageElement({required this.chatElement, Key? key}) : super(key: key);
 
   @override
   _MessageElementState createState() => _MessageElementState();

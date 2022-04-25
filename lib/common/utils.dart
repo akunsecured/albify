@@ -93,12 +93,11 @@ class Utils {
   }
 
   static String formatDate(int dateInInt) {
-    final DateTime now = DateTime.now();
     final DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
     final DateTime twoDaysAgo = DateTime.now().subtract(Duration(days: 2));
     final DateTime oneWeekAgo = DateTime.now().subtract(Duration(days: 7));
     var date = DateTime.fromMillisecondsSinceEpoch(dateInInt);
-    if (date.isBefore(now) && date.isAfter(yesterday)) {
+    if (date.isAfter(yesterday)) {
       return DateFormat.jm().format(date);
     } else if (date.isBefore(yesterday) && date.isAfter(twoDaysAgo)) {
       return 'Yesterday ${DateFormat.jm().format(date)}';

@@ -5,29 +5,29 @@ class MessageModel {
   int? timeStamp;
   int sentFromClient;
 
-  MessageModel({
-    required this.sentBy,
-    required this.message,
-    required this.sentFromClient,
-    this.timeStamp
-  });
+  MessageModel(
+      {required this.sentBy,
+      required this.message,
+      required this.sentFromClient,
+      this.timeStamp});
 
-  factory MessageModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) =>
-    MessageModel.fromMap(documentSnapshot.data() as Map<String, dynamic>);
+  factory MessageModel.fromDocumentSnapshot(
+          DocumentSnapshot documentSnapshot) =>
+      MessageModel.fromMap(documentSnapshot.data() as Map<String, dynamic>);
 
   factory MessageModel.fromMap(Map<String, dynamic> map) => MessageModel(
-    sentBy: map['sentBy'],
-    message: map['message'],
-    sentFromClient: map['sentFromClient'],
-    timeStamp: (map['timeStamp'] as Timestamp?)?.toDate().millisecondsSinceEpoch
-  );
+      sentBy: map['sentBy'],
+      message: map['message'],
+      sentFromClient: map['sentFromClient'],
+      timeStamp:
+          (map['timeStamp'] as Timestamp?)?.toDate().millisecondsSinceEpoch);
 
   Map<String, dynamic> toMap() => {
-    'sentBy': sentBy,
-    'message': message,
-    'sentFromClient': sentFromClient,
-    'timeStamp': timeStamp
-  };
+        'sentBy': sentBy,
+        'message': message,
+        'sentFromClient': sentFromClient,
+        'timeStamp': timeStamp
+      };
 }
 
 class ConversationModel {
@@ -35,10 +35,7 @@ class ConversationModel {
   List participants;
   MessageModel? lastMessage;
 
-  ConversationModel(
-      {required this.participants,
-      this.id,
-      this.lastMessage});
+  ConversationModel({required this.participants, this.id, this.lastMessage});
 
   factory ConversationModel.fromDocumentSnapshot(
       DocumentSnapshot documentSnapshot) {
@@ -46,11 +43,11 @@ class ConversationModel {
     return ConversationModel(
         id: documentSnapshot.id,
         participants: data['participants'],
-        lastMessage: data['lastMessage'] != null ? MessageModel.fromMap(data['lastMessage']) : null);
+        lastMessage: data['lastMessage'] != null
+            ? MessageModel.fromMap(data['lastMessage'])
+            : null);
   }
 
-  Map<String, dynamic> toMap() => {
-        'participants': participants,
-        'lastMessage': lastMessage?.toMap()
-      };
+  Map<String, dynamic> toMap() =>
+      {'participants': participants, 'lastMessage': lastMessage?.toMap()};
 }

@@ -14,7 +14,8 @@ import 'package:provider/provider.dart';
 class ConversationElement extends StatefulWidget {
   final ConversationModel conversationModel;
 
-  ConversationElement({required this.conversationModel});
+  ConversationElement({Key? key, required this.conversationModel})
+      : super(key: key);
 
   @override
   _ConversationElementState createState() => _ConversationElementState();
@@ -23,12 +24,15 @@ class ConversationElement extends StatefulWidget {
 class _ConversationElementState extends State<ConversationElement> {
   late User currentUser;
   late Future<UserModel?> future;
+  late Stream<UserModel?> stream;
   late DatabaseService _databaseService;
 
   @override
   void initState() {
     _databaseService = Provider.of<DatabaseService>(context, listen: false);
     currentUser = FirebaseAuth.instance.currentUser!;
+    var otherUserID = getUserID(widget.conversationModel.participants);
+    stream = _databaseService.userStream(userID: otherUserID);
     super.initState();
   }
 
@@ -42,71 +46,84 @@ class _ConversationElementState extends State<ConversationElement> {
   }
 
   @override
+  void didUpdateWidget(covariant ConversationElement oldWidget) {
+    var oldUserID = getUserID(oldWidget.conversationModel.participants);
+    var newUserID = getUserID(widget.conversationModel.participants);
+    if (oldUserID != newUserID) {
+      stream = _databaseService.userStream(userID: newUserID);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var otherUserID = getUserID(widget.conversationModel.participants);
-    future = _databaseService.getUserData(userID: otherUserID);
-    return FutureBuilder(
-      future: future,
-      builder: (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return Container();
-        }
+    return StreamBuilder<UserModel?>(
+        stream: stream,
+        builder: (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
+          if (snapshot.hasError) {
+            print(snapshot.error.toString());
+          }
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.connectionState == ConnectionState.none) {
+            return Container();
+          }
+          var userModel = snapshot.data!;
 
-        var userModel = snapshot.data!;
-
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                CustomPageRouteBuilder(
-                    child: ChatScreen(
-                      conversationId: widget.conversationModel.id!,
-                      nameOfUser: userModel.name,
-                    ),
-                    direction: SlideDirections.FROM_LEFT));
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: MARGIN_HORIZONTAL, vertical: 10),
-            child: Row(
-              children: [
-                Expanded(
-                    child: Row(
-                  children: [
-                    MyCircleAvatar(avatarUrl: userModel.avatarUrl, radius: 30),
-                    Utils.addHorizontalSpace(16),
-                    Expanded(
-                        child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            userModel.name,
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          Utils.addVerticalSpace(6),
-                          Text(
-                            getMessage(),
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  CustomPageRouteBuilder(
+                      child: ChatScreen(
+                        conversationId: widget.conversationModel.id!,
+                        nameOfUser: userModel.name,
                       ),
-                    )),
-                    Text(
-                      Utils.formatDate(widget
-                              .conversationModel.lastMessage!.timeStamp ??
-                          widget.conversationModel.lastMessage!.sentFromClient),
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                ))
-              ],
+                      direction: SlideDirections.FROM_LEFT));
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MARGIN_HORIZONTAL, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Row(
+                    children: [
+                      MyCircleAvatar(
+                          avatarUrl: userModel.avatarUrl, radius: 30),
+                      Utils.addHorizontalSpace(16),
+                      Expanded(
+                          child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userModel.name,
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                            Utils.addVerticalSpace(6),
+                            Text(
+                              getMessage(),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                      )),
+                      Text(
+                        Utils.formatDate(
+                            widget.conversationModel.lastMessage!.timeStamp ??
+                                widget.conversationModel.lastMessage!
+                                    .sentFromClient),
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  ))
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 
   String getMessage() =>

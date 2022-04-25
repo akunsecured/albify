@@ -92,40 +92,31 @@ class DatabaseService {
             .toList();
         if (searchQuery != null) {
           if (searchQuery.priceBetween != null) {
-            properties.removeWhere(
-                (property) =>
-                    property.price < searchQuery.priceBetween!.from ||
-                    property.price > searchQuery.priceBetween!.to
-            );
+            properties.removeWhere((property) =>
+                property.price < searchQuery.priceBetween!.from ||
+                property.price > searchQuery.priceBetween!.to);
           }
           if (searchQuery.roomsBetween != null) {
-            properties.removeWhere(
-                (property) =>
-                    property.rooms < searchQuery.roomsBetween!.from ||
-                    property.rooms > searchQuery.roomsBetween!.to
-            );
+            properties.removeWhere((property) =>
+                property.rooms < searchQuery.roomsBetween!.from ||
+                property.rooms > searchQuery.roomsBetween!.to);
           }
           if (searchQuery.floorspaceBetween != null) {
-            properties.removeWhere(
-                (property) =>
-                    property.floorspace < searchQuery.floorspaceBetween!.from ||
-                    property.floorspace > searchQuery.floorspaceBetween!.to
-            );
+            properties.removeWhere((property) =>
+                property.floorspace < searchQuery.floorspaceBetween!.from ||
+                property.floorspace > searchQuery.floorspaceBetween!.to);
           }
           if (searchQuery.propertyType != null) {
             properties.removeWhere(
-                (property) => property.type != searchQuery.propertyType
-            );
+                (property) => property.type != searchQuery.propertyType);
           }
           if (searchQuery.newlyBuilt != null) {
             properties.removeWhere(
-                (property) => property.newlyBuilt != searchQuery.newlyBuilt
-            );
+                (property) => property.newlyBuilt != searchQuery.newlyBuilt);
           }
           if (searchQuery.forSale != null) {
             properties.removeWhere(
-                (property) => property.forSale != searchQuery.forSale
-            );
+                (property) => property.forSale != searchQuery.forSale);
           }
         }
       }
@@ -247,14 +238,19 @@ class DatabaseService {
   Future<String> findOrCreateConversation(String otherUserID) async {
     print(uid);
     print(otherUserID);
-    QuerySnapshot snapshot = await conversationsRef
-        .where('participants', arrayContains: uid!)
-        .get();
+    QuerySnapshot snapshot =
+        await conversationsRef.where('participants', arrayContains: uid!).get();
     print(snapshot.docs.length);
     if (snapshot.docs.isNotEmpty) {
-      var conversation = snapshot.docs.map((doc) => ConversationModel.fromDocumentSnapshot(doc)).toList()..removeWhere((element) => !element.participants.contains(otherUserID))..first;
+      var conversation = snapshot.docs
+          .map((doc) => ConversationModel.fromDocumentSnapshot(doc))
+          .toList()
+        ..removeWhere((element) => !element.participants.contains(otherUserID))
+        ..first;
 
-      return conversation.isNotEmpty ? conversation.first.id! : await _createConversation(otherUserID);
+      return conversation.isNotEmpty
+          ? conversation.first.id!
+          : await _createConversation(otherUserID);
     } else {
       return await _createConversation(otherUserID);
     }
@@ -262,23 +258,17 @@ class DatabaseService {
 
   Future<String> _createConversation(String otherUserID) async {
     var newDocument = conversationsRef.doc();
-    var conversationModel = ConversationModel(
-        participants: [
-          uid!, otherUserID
-        ]
-    );
+    var conversationModel =
+        ConversationModel(participants: [uid!, otherUserID]);
 
-    await conversationsRef.doc(newDocument.id).set(
-        conversationModel.toMap()
-    );
+    await conversationsRef.doc(newDocument.id).set(conversationModel.toMap());
     return newDocument.id;
   }
 
   Stream<QuerySnapshot> conversationsStream() => conversationsRef
-        .where('participants', arrayContains: uid)
-        .orderBy('lastMessage.timeStamp', descending: true)
-        .snapshots();
-
+      .where('participants', arrayContains: uid)
+      .orderBy('lastMessage.timeStamp', descending: true)
+      .snapshots();
 
   Stream<QuerySnapshot> messagesStream(String conversationID) =>
       conversationsRef
@@ -287,7 +277,8 @@ class DatabaseService {
           .orderBy('timeStamp', descending: true)
           .snapshots();
 
-  Future<void> sendMessage({ required String conversationID, required String message }) async {
+  Future<void> sendMessage(
+      {required String conversationID, required String message}) async {
     WriteBatch _batch = _firestore.batch();
     try {
       var newDocument = getConversationMessagesRef(conversationID).doc();
@@ -298,14 +289,11 @@ class DatabaseService {
         'timeStamp': FieldValue.serverTimestamp()
       };
 
-      _batch.set(
-          getConversationMessagesRef(conversationID).doc(newDocument.id),
-          newMessage
-      );
+      _batch.set(getConversationMessagesRef(conversationID).doc(newDocument.id),
+          newMessage);
 
-      _batch.update(conversationsRef.doc(conversationID), {
-        "lastMessage": newMessage
-      });
+      _batch.update(
+          conversationsRef.doc(conversationID), {"lastMessage": newMessage});
 
       await _batch.commit();
     } on FirebaseException catch (e) {
@@ -323,8 +311,8 @@ class DatabaseService {
         break;
       }
     }
-    var otherUser = UserModel.fromDocumentSnapshot(
-      await usersRef.doc(otherUserID).get());
+    var otherUser =
+        UserModel.fromDocumentSnapshot(await usersRef.doc(otherUserID).get());
     return otherUser.name;
   }
 }

@@ -10,7 +10,6 @@ class MyCircleAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(avatarUrl);
     return CircleAvatar(
       backgroundColor:
           (avatarUrl == null || avatarUrl!.isEmpty) ? Colors.black : null,

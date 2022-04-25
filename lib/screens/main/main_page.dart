@@ -1,4 +1,4 @@
-import 'package:albify/screens/main/chat_view.dart';
+import 'package:albify/screens/main/chats_view.dart';
 import 'package:albify/screens/main/favorites_view.dart';
 import 'package:albify/screens/main/home_view.dart';
 import 'package:albify/screens/main/map_view.dart';
@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
           HomeView(),
           FavoritesView(),
           MapView(),
-          ChatView(),
+          ChatsView(),
           ProfileView()
         ],
       ),
@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.chat),
-              label: 'Chat'
+              label: 'Chats'
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),

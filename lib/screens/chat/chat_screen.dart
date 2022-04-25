@@ -1,6 +1,8 @@
 import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/message_model.dart';
+import 'package:albify/providers/chat_messages_provider.dart';
+import 'package:albify/screens/chat/message_list.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_circular_progress_indicator.dart';
@@ -8,8 +10,6 @@ import 'package:albify/widgets/my_error_printer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'message_element.dart';
 
 class ChatScreen extends StatefulWidget {
   static const String ROUTE_ID = '/chat';
@@ -67,53 +67,36 @@ class _ChatScreenState extends State<ChatScreen> {
                 );
               }
 
-              return buildStream(snapshot.data!);
+              return buildPage(snapshot.data!);
             })
-        : buildStream(widget.nameOfUser!);
+        : buildPage(widget.nameOfUser!);
   }
 
   List<MessageModel> messagesFromQuerySnapshot(QuerySnapshot data) => data.docs
       .map((document) => MessageModel.fromDocumentSnapshot(document))
       .toList();
 
-  Widget buildStream(String name) => StreamBuilder<QuerySnapshot?>(
-        stream: stream,
-        builder:
-            (BuildContext context, AsyncSnapshot<QuerySnapshot?> snapshot) {
-          if (snapshot.hasError) {
-            Scaffold(
-                appBar: AppBar(
-                  title: Text('Error'),
-                  centerTitle: true,
-                ),
-                body: MyErrorPrinter(error: snapshot.error));
-          }
-
-          if (snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(body: MyCircularProgressIndicator());
-          }
-
-          var messages = messagesFromQuerySnapshot(snapshot.data!);
-          return Scaffold(
-              appBar: AppBar(
-                title: Text(name),
-                centerTitle: true,
-              ),
-              body: buildChatScreen(messages));
-        },
-      );
-
-  Widget buildChatScreen(List<MessageModel> messages) => Column(
+  Widget buildPage(String name) => Scaffold(
+      appBar: AppBar(
+        title: Text(name),
+        centerTitle: true,
+      ),
+      body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: ListView.builder(
-                itemCount: messages.length,
-                reverse: true,
-                itemBuilder: (context, index) => MessageElement(
-                      chatElement: messages[index],
-                    )),
+            child: ChangeNotifierProvider(
+              create: (_) => ChatMessagesProvider(
+                  Provider.of<DatabaseService>(context, listen: false),
+                  conversationID: widget.conversationId),
+              builder: (context, child) =>
+                  StreamProvider<List<MessageModel>>.value(
+                value: Provider.of<ChatMessagesProvider>(context, listen: false)
+                    .messages(),
+                initialData: [],
+                child: MessageList(),
+              ),
+            ),
           ),
           Utils.addVerticalSpace(12),
           Align(
@@ -147,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 )),
           )
         ],
-      );
+      ));
 
   OutlineInputBorder getBorder() => OutlineInputBorder(
       borderRadius: BorderRadius.circular(RADIUS),
