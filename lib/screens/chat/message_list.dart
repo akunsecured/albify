@@ -5,15 +5,20 @@ import 'package:provider/provider.dart';
 import 'message_element.dart';
 
 class MessageList extends StatelessWidget {
-  const MessageList({Key? key}) : super(key: key);
+  final ScrollController controller;
+  const MessageList({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<MessageModel> messages = Provider.of<List<MessageModel>>(context);
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      controller.jumpTo(controller.position.maxScrollExtent);
+    });
     return ListView(
+      controller: controller,
       children: messages
           .map((message) => MessageElement(chatElement: message))
-          .toList(),
+          .toList().reversed.toList(),
     );
   }
 }

@@ -27,6 +27,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late Future<String?> future;
   late Stream<QuerySnapshot?> stream;
   late TextEditingController messageController;
+  late ScrollController listScrollController;
 
   @override
   void initState() {
@@ -34,12 +35,14 @@ class _ChatScreenState extends State<ChatScreen> {
     future = _databaseService.getOtherUserName(widget.conversationId);
     stream = _databaseService.messagesStream(widget.conversationId);
     messageController = TextEditingController();
+    listScrollController = ScrollController();
     super.initState();
   }
 
   @override
   void dispose() {
     messageController.dispose();
+    listScrollController.dispose();
     super.dispose();
   }
 
@@ -94,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 value: Provider.of<ChatMessagesProvider>(context, listen: false)
                     .messages(),
                 initialData: [],
-                child: MessageList(),
+                child: MessageList(controller: listScrollController),
               ),
             ),
           ),
