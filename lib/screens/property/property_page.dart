@@ -34,10 +34,10 @@ class PropertyPage extends StatefulWidget {
 
 class _PropertyPageState extends State<PropertyPage> {
   late DatabaseService databaseService;
-  late Future<UserModel?> future;
+  late Future future;
   late LatLng position;
   late Size _size;
-  UserModel? userModel;
+  UserModel? _propertyOwner, _userModel;
   late User? currentUser;
 
   @override
@@ -47,9 +47,19 @@ class _PropertyPageState extends State<PropertyPage> {
       widget.property.location.lng
     );
     databaseService = Provider.of<DatabaseService>(context, listen: false);
-    future = databaseService.getUserData(userID: widget.property.ownerID);
+    future = getUsersData();
     currentUser = FirebaseAuth.instance.currentUser;
     super.initState();
+  }
+
+  Future getUsersData() async {
+    UserModel? owner, user;
+    owner = await databaseService.getUserData(userID: widget.property.ownerID);
+    user = await databaseService.getUserData();
+    return {
+      'owner': owner,
+      'user': user
+    };
   }
 
   @override
@@ -82,7 +92,7 @@ class _PropertyPageState extends State<PropertyPage> {
       ),
       body: FutureBuilder(
         future: this.future,
-        builder: (BuildContext context, AsyncSnapshot<UserModel?> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasError) {
             print(snapshot.error);
             return Align(
@@ -108,7 +118,9 @@ class _PropertyPageState extends State<PropertyPage> {
 
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data != null) {
-              userModel = snapshot.data;
+              print(snapshot.data);
+              _propertyOwner = snapshot.data!['owner'];
+              _userModel = snapshot.data!['user'];
               return buildPropertyPage();
             }
             else {
@@ -365,7 +377,7 @@ class _PropertyPageState extends State<PropertyPage> {
         buttons.add(buildEditButton(2.5, iconOnly: true));
       } else {
         buttons.add(buildChatButton(4.5, iconOnly: true));
-        if (userModel?.phoneNumber != null && userModel?.phoneNumber != -1) {
+        if (_propertyOwner?.phoneNumber != null && _propertyOwner?.phoneNumber != -1) {
           buttons.add(buildCallButton(4.5, iconOnly: true));
         }
         buttons.add(buildFavoriteButton(4.5, iconOnly: true));
@@ -418,7 +430,7 @@ class _PropertyPageState extends State<PropertyPage> {
       margin: EdgeInsets.symmetric(
         horizontal: 8
       ),
-      child: userModel!.favoritePropertyIDs!.cast<String>().contains(widget.property.id) ?
+      child: _userModel!.favoritePropertyIDs!.cast<String>().contains(widget.property.id) ?
         RoundedButton(
           text: 'Favorites',
           icon: Icons.star,
@@ -426,7 +438,14 @@ class _PropertyPageState extends State<PropertyPage> {
           width: getPreferredSize(_size) / divider,
           iconOnly: iconOnly,
           onPressed: () {
-            // TODO: add to favorites
+            databaseService.removeFromFavorites(widget.property.id).then((value) {
+              if (value) {
+                Utils.showToast('Removed from favorites');
+                setState(() {
+                  _userModel!.favoritePropertyIDs!.remove(widget.property.id);
+                });
+              }
+            });
           },
         ) :
         RoundedButton(
@@ -436,7 +455,14 @@ class _PropertyPageState extends State<PropertyPage> {
           width: getPreferredSize(_size) / divider,
           iconOnly: iconOnly,
           onPressed: () {
-            // TODO: remove from favorites
+            databaseService.addToFavorites(widget.property.id).then((value) {
+              if (value) {
+                Utils.showToast('Added to favorites');
+                setState(() {
+                  _userModel!.favoritePropertyIDs!.add(widget.property.id);
+                });
+              }
+            });
           },
         ),
     );

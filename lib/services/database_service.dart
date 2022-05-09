@@ -330,4 +330,38 @@ class DatabaseService {
         UserModel.fromDocumentSnapshot(await usersRef.doc(otherUserID).get());
     return otherUser.name;
   }
+
+  Future<bool> addToFavorites(String? id) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      var user = await getUserData();
+      if (user!.favoritePropertyIDs != null && !user.favoritePropertyIDs!.contains(id)) {
+        _batch.update(usersRef.doc(user.id), {
+          'favoritePropertyIDs': FieldValue.arrayUnion([id])
+        });
+        await _batch.commit();
+      }
+    } on FirebaseException catch (e) {
+      Utils.showToast(e.message.toString());
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> removeFromFavorites(String? id) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      var user = await getUserData();
+      if (user!.favoritePropertyIDs != null && user.favoritePropertyIDs!.contains(id)) {
+        _batch.update(usersRef.doc(user.id), {
+          'favoritePropertyIDs': FieldValue.arrayRemove([id])
+        });
+        await _batch.commit();
+      }
+    } on FirebaseException catch (e) {
+      Utils.showToast(e.message.toString());
+      return false;
+    }
+    return true;
+  }
 }

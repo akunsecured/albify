@@ -6,13 +6,15 @@ class MyText extends StatelessWidget {
   late final double? fontSize;
   late final FontWeight? fontWeight;
   late final EdgeInsetsGeometry? margin;
+  late final int? maxLines;
 
   MyText({
     required this.text,
     this.color,
     this.fontSize,
     this.fontWeight,
-    this.margin
+    this.margin,
+    this.maxLines
   });
 
   @override
@@ -21,6 +23,8 @@ class MyText extends StatelessWidget {
       margin: this.margin,
       child: Text(
         text,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: this.color ?? Colors.white,
           fontSize: this.fontSize ?? 16,

@@ -39,22 +39,20 @@ class _PropertyCardState extends State<PropertyCard> {
             Container(
               margin: EdgeInsets.all(16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MyText(
-                        text: '${widget.property.price} Ft',
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 24,
-                      ),
-                      IconButton(
-                        iconSize: 36,
-                        onPressed: () {}, 
-                        icon: Icon(Icons.star_border)
-                      )
-                    ],
+                  MyText(
+                    text: widget.property.location.locationName ?? 'Unknown location',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 24,
+                    maxLines: 1,
+                  ),
+                  MyText(
+                    text: '${widget.property.price} Ft',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 24,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
