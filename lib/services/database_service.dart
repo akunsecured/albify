@@ -153,6 +153,21 @@ class DatabaseService {
     return true;
   }
 
+  Future<bool> deleteProperty(PropertyModel property) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      await propertiesRef.doc(property.id).delete();
+      _batch.update(usersRef.doc(property.ownerID), {
+        "propertyIDs": FieldValue.arrayRemove([property.id])
+      });
+      await _batch.commit();
+    } on FirebaseException catch (e) {
+      Utils.showToast(e.toString());
+      return false;
+    }
+    return true;
+  }
+
   Future<String> uploadPropertyImage(
       String propertyID, PlatformFile image) async {
     String path = DateTime.now().millisecondsSinceEpoch.toString();

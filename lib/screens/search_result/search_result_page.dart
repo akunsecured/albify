@@ -1,7 +1,10 @@
+import 'package:albify/animations/custom_page_route_builder.dart';
+import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/property_search_models.dart';
+import 'package:albify/screens/property/property_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_dropdown_menu.dart';
@@ -20,6 +23,7 @@ class SearchResultPage extends StatefulWidget {
 
 class _SearchResultPageState extends State<SearchResultPage> {
   late Future<List<PropertyModel>> future;
+  SearchQuery? searchQuery;
   SearchSort sortingMode = SearchSort.PRICE_ASCENDING;
   late Size _size;
 
@@ -33,6 +37,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
+    print('lefut');
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -49,8 +54,9 @@ class _SearchResultPageState extends State<SearchResultPage> {
             ).then((value) {
               if (value != null) {
                 setState(() {
+                  searchQuery = value;
                   future = Provider.of<DatabaseService>(context, listen: false)
-                      .findProperties(searchQuery: value);
+                      .findProperties(searchQuery: searchQuery);
                 });
               }
             });
@@ -159,7 +165,25 @@ class _SearchResultPageState extends State<SearchResultPage> {
               md: 6,
               lg: 6,
               xl: 4,
-              child: PropertyCard(property)
+              child: PropertyCard(
+                  property,
+                  onTap: () async {
+                      var result = await Navigator.push(
+                        context,
+                        CustomPageRouteBuilder(
+                            child: PropertyPage(property: property),
+                            direction: SlideDirections.FROM_DOWN
+                        )
+                      );
+                      if (result != null && result) {
+                        print('hello');
+                        setState(() {
+                          future = Provider.of<DatabaseService>(context, listen: false)
+                              .findProperties(searchQuery: searchQuery);
+                        });
+                      }
+                  },
+              )
             )
           ).toList()
         ),

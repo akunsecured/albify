@@ -10,6 +10,7 @@ import 'package:albify/screens/chat/chat_screen.dart';
 import 'package:albify/screens/property/property_map_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
+import 'package:albify/widgets/my_alert_dialog.dart';
 import 'package:albify/widgets/my_carousel_slider.dart';
 import 'package:albify/widgets/my_google_map.dart';
 import 'package:albify/widgets/my_text.dart';
@@ -32,6 +33,7 @@ class PropertyPage extends StatefulWidget {
 }
 
 class _PropertyPageState extends State<PropertyPage> {
+  late DatabaseService databaseService;
   late Future<UserModel?> future;
   late LatLng position;
   late Size _size;
@@ -44,7 +46,8 @@ class _PropertyPageState extends State<PropertyPage> {
       widget.property.location.lat,
       widget.property.location.lng
     );
-    future = Provider.of<DatabaseService>(context, listen: false).getUserData(userID: widget.property.ownerID);
+    databaseService = Provider.of<DatabaseService>(context, listen: false);
+    future = databaseService.getUserData(userID: widget.property.ownerID);
     currentUser = FirebaseAuth.instance.currentUser;
     super.initState();
   }
@@ -60,9 +63,18 @@ class _PropertyPageState extends State<PropertyPage> {
         actions: currentUser!.uid == widget.property.ownerID ?
           [
             IconButton(
-              onPressed: () {
-                // TODO: delete property
-              },
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) => MyAlertDialog(
+                    title: 'Deleting property',
+                    content: 'Are you sure you want to delete this property?',
+                    onPositiveButtonPressed: () async {
+                      databaseService.deleteProperty(widget.property)
+                      .then((success) => onDelete(success));
+                    },
+                    onNegativeButtonPressed: () => Navigator.of(context).pop()
+                )
+              ),
               icon: Icon(Icons.delete)
             )
           ] :
@@ -437,4 +449,11 @@ class _PropertyPageState extends State<PropertyPage> {
       width: getPreferredSize(_size) / divider,
       iconOnly: iconOnly,
     );
+
+  void onDelete(bool success) {
+    Navigator.of(context).pop();
+    if (success) {
+      Navigator.of(context).pop(true);
+    }
+  }
 }

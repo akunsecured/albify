@@ -1,19 +1,20 @@
 import 'dart:ui';
 
-import 'package:albify/animations/custom_page_route_builder.dart';
-import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/common/constants.dart';
 import 'package:albify/models/property_model.dart';
-import 'package:albify/screens/property/property_page.dart';
 import 'package:albify/widgets/my_carousel_slider.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:flutter/material.dart';
 
 class PropertyCard extends StatefulWidget {
   final PropertyModel property;
+  final VoidCallback? onTap;
 
   PropertyCard(
-    this.property
+    this.property,
+    {
+      this.onTap
+    }
   );
 
   @override
@@ -21,19 +22,12 @@ class PropertyCard extends StatefulWidget {
 }
 
 class _PropertyCardState extends State<PropertyCard> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => 
-        Navigator.push(
-          context,
-          CustomPageRouteBuilder(
-            child: PropertyPage(property: widget.property),
-            direction: SlideDirections.FROM_DOWN
-          )
-        ),
+      onTap: () {
+        widget.onTap!();
+      },
       child: Card(
         margin: EdgeInsets.all(8.0),
         shape: RoundedRectangleBorder(
