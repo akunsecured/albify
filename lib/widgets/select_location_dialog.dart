@@ -4,7 +4,6 @@ import 'package:albify/widgets/my_google_map.dart';
 import 'package:albify/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectLocationDialog extends StatefulWidget {
   @override
@@ -67,7 +66,6 @@ class _SelectLocationDialogState extends State<SelectLocationDialog> {
   }
 
   onTap(LatLng position) {
-    print('Selected position: ${position.latitude}, ${position.longitude}');
     setState(() {
       this.selectedPoint = position;
     });

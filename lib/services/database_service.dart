@@ -16,6 +16,7 @@ class DatabaseService {
   late final CollectionReference usersRef;
   late final CollectionReference propertiesRef;
   late final CollectionReference conversationsRef;
+  late final CollectionReference searchQueriesRef;
 
   CollectionReference getConversationMessagesRef(String conversationID) =>
       conversationsRef.doc(conversationID).collection("messages");
@@ -28,6 +29,7 @@ class DatabaseService {
     usersRef = _firestore.collection('users');
     propertiesRef = _firestore.collection('properties');
     conversationsRef = _firestore.collection('conversations');
+    searchQueriesRef = usersRef.doc(uid).collection('search_queries');
   }
 
   Future<UserModel?> getUserData({String? userID}) async {
@@ -91,29 +93,41 @@ class DatabaseService {
             .map((doc) => PropertyModel.fromDocumentSnapshot(doc))
             .toList();
         if (searchQuery != null) {
-          if (searchQuery.priceBetween != null) {
-            properties.removeWhere((property) =>
-                property.price < searchQuery.priceBetween!.from ||
-                property.price > searchQuery.priceBetween!.to);
+          if (searchQuery.priceBetween.from != null) {
+            properties.removeWhere(
+                (property) => property.price < searchQuery.priceBetween.from!);
           }
-          if (searchQuery.roomsBetween != null) {
-            properties.removeWhere((property) =>
-                property.rooms < searchQuery.roomsBetween!.from ||
-                property.rooms > searchQuery.roomsBetween!.to);
+
+          if (searchQuery.priceBetween.to != null) {
+            properties.removeWhere(
+                (property) => property.price > searchQuery.priceBetween.to!);
           }
-          if (searchQuery.floorspaceBetween != null) {
-            properties.removeWhere((property) =>
-                property.floorspace < searchQuery.floorspaceBetween!.from ||
-                property.floorspace > searchQuery.floorspaceBetween!.to);
+
+          if (searchQuery.roomNum != null) {
+            properties.removeWhere(
+                (property) => property.rooms >= searchQuery.roomNum!);
           }
+
+          if (searchQuery.floorspaceBetween.from != null) {
+            properties.removeWhere((property) =>
+                property.floorspace < searchQuery.floorspaceBetween.from!);
+          }
+
+          if (searchQuery.floorspaceBetween.to != null) {
+            properties.removeWhere((property) =>
+                property.floorspace > searchQuery.floorspaceBetween.to!);
+          }
+
           if (searchQuery.propertyType != null) {
             properties.removeWhere(
                 (property) => property.type != searchQuery.propertyType);
           }
+
           if (searchQuery.newlyBuilt != null) {
             properties.removeWhere(
                 (property) => property.newlyBuilt != searchQuery.newlyBuilt);
           }
+
           if (searchQuery.forSale != null) {
             properties.removeWhere(
                 (property) => property.forSale != searchQuery.forSale);
@@ -251,11 +265,8 @@ class DatabaseService {
   }
 
   Future<String> findOrCreateConversation(String otherUserID) async {
-    print(uid);
-    print(otherUserID);
     QuerySnapshot snapshot =
         await conversationsRef.where('participants', arrayContains: uid!).get();
-    print(snapshot.docs.length);
     if (snapshot.docs.isNotEmpty) {
       var conversation = snapshot.docs
           .map((doc) => ConversationModel.fromDocumentSnapshot(doc))
@@ -335,7 +346,8 @@ class DatabaseService {
     WriteBatch _batch = _firestore.batch();
     try {
       var user = await getUserData();
-      if (user!.favoritePropertyIDs != null && !user.favoritePropertyIDs!.contains(id)) {
+      if (user!.favoritePropertyIDs != null &&
+          !user.favoritePropertyIDs!.contains(id)) {
         _batch.update(usersRef.doc(user.id), {
           'favoritePropertyIDs': FieldValue.arrayUnion([id])
         });
@@ -352,7 +364,8 @@ class DatabaseService {
     WriteBatch _batch = _firestore.batch();
     try {
       var user = await getUserData();
-      if (user!.favoritePropertyIDs != null && user.favoritePropertyIDs!.contains(id)) {
+      if (user!.favoritePropertyIDs != null &&
+          user.favoritePropertyIDs!.contains(id)) {
         _batch.update(usersRef.doc(user.id), {
           'favoritePropertyIDs': FieldValue.arrayRemove([id])
         });
@@ -364,4 +377,27 @@ class DatabaseService {
     }
     return true;
   }
+
+  Future addSearchQuery(SearchQuery newSearchQuery) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      var newDocument = searchQueriesRef.doc();
+      _batch.set(searchQueriesRef.doc(newDocument.id), newSearchQuery.toMap());
+      await _batch.commit();
+    } on FirebaseException catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future removeSearchQuery(String id) async {
+    WriteBatch _batch = _firestore.batch();
+    try {
+      _batch.delete(searchQueriesRef.doc(id));
+      await _batch.commit();
+    } on FirebaseException catch (e) {
+      print(e.message);
+    }
+  }
+
+  Stream<QuerySnapshot> searchQueriesStream() => searchQueriesRef.snapshots();
 }

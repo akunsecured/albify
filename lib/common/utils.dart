@@ -5,39 +5,35 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
-  static RegExp emailRegExp = RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
-  static RegExp passwordRegExp = RegExp(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{6,20}$');
+  static RegExp emailRegExp = RegExp(
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  static RegExp passwordRegExp = RegExp(
+      r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{6,20}$');
+  static RegExp priceSearchRegExp = RegExp(r'^0|(^[1-9][0-9]{0,6})');
+  static RegExp floorspaceSearchRegExp = RegExp(r'^0|(^[1-9][0-9]{0,5})');
 
   static validateEmail(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Email must be filled';
-    if (!Utils.emailRegExp.hasMatch(value))
-      return 'Email is badly formatted';
+    if (value == null || value.isEmpty) return 'Email must be filled';
+    if (!Utils.emailRegExp.hasMatch(value)) return 'Email is badly formatted';
     return null;
   }
 
   static validatePassword(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Password must be filled';
-    if (value.length < 6)
-      return 'Password should be at least 6 characters';
+    if (value == null || value.isEmpty) return 'Password must be filled';
+    if (value.length < 6) return 'Password should be at least 6 characters';
     return null;
   }
 
   static validateName(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Name must be filled';
-    if (value.length < 2)
-      return 'Name should be at least 2 characters';
+    if (value == null || value.isEmpty) return 'Name must be filled';
+    if (value.length < 2) return 'Name should be at least 2 characters';
     return null;
   }
 
   static validateConfirmPassword(String? value, String? matchWith) {
-    print("Matchwith: $matchWith");
     if (value == null || value.isEmpty)
       return 'Confirm password must be filled';
-    if (value != matchWith)
-      return 'Passwords do not match';
+    if (value != matchWith) return 'Passwords do not match';
     return null;
   }
 
@@ -58,37 +54,30 @@ class Utils {
   }
 
   static validatePrice(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Price must be filled';
-    if (int.parse(value) < 1)
-      return 'Price must be positive number';
+    if (value == null || value.isEmpty) return 'Price must be filled';
+    if (int.parse(value) < 1) return 'Price must be positive number';
     return null;
   }
 
   static validateRooms(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Rooms must be filled';
-    if (int.parse(value) < 1)
-      return 'Rooms must be positive number';
+    if (value == null || value.isEmpty) return 'Rooms must be filled';
+    if (int.parse(value) < 1) return 'Rooms must be positive number';
     return null;
   }
 
   static validateFloorspace(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Floorspace must be filled';
-    if (double.parse(value) < 1)
-      return 'Floorspace must be positive number';
+    if (value == null || value.isEmpty) return 'Floorspace must be filled';
+    if (double.parse(value) < 1) return 'Floorspace must be positive number';
     return null;
   }
 
   static validateDescription(String? value) {
-    if (value == null || value.isEmpty)
-      return 'Description must be written';
+    if (value == null || value.isEmpty) return 'Description must be written';
     return null;
   }
 
   static enumToString(PropertyType enumValue) {
-    var temp = enumValue.toString().split('.')[1];
+    var temp = enumValue.toString().split('.')[1].replaceAll('_', ' ');
     return temp.substring(0, 1) + temp.toLowerCase().substring(1);
   }
 

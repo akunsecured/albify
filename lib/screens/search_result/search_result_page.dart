@@ -1,22 +1,25 @@
 import 'package:albify/animations/custom_page_route_builder.dart';
 import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/common/constants.dart';
-import 'package:albify/common/utils.dart';
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/property_search_models.dart';
+import 'package:albify/providers/search_result_filter_provider.dart';
 import 'package:albify/screens/property/property_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
-import 'package:albify/widgets/my_dropdown_menu.dart';
-import 'package:albify/widgets/my_range_slider.dart';
 import 'package:albify/widgets/my_text.dart';
 import 'package:albify/widgets/property_card.dart';
 import 'package:albify/widgets/rounded_button.dart';
+import 'package:albify/widgets/search_result_filter_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class SearchResultPage extends StatefulWidget {
+  final SearchQuery? searchQuery;
+
+  SearchResultPage({this.searchQuery});
+
   @override
   State<SearchResultPage> createState() => _SearchResultPageState();
 }
@@ -29,15 +32,15 @@ class _SearchResultPageState extends State<SearchResultPage> {
 
   @override
   void initState() {
+    searchQuery = widget.searchQuery;
     future = Provider.of<DatabaseService>(context, listen: false)
-        .findProperties();
+        .findProperties(searchQuery: searchQuery);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
-    print('lefut');
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -50,8 +53,15 @@ class _SearchResultPageState extends State<SearchResultPage> {
           onPressed: () {
             showDialog(
                 context: context,
-                builder: (BuildContext context) => filterDialog()
-            ).then((value) {
+                builder: (BuildContext context) => ChangeNotifierProvider(
+                    create: (_) =>
+                        SearchResultFilterProvider(searchQuery: searchQuery),
+                    child: Consumer<SearchResultFilterProvider>(
+                        builder: (BuildContext context,
+                                SearchResultFilterProvider provider,
+                                Widget? child) =>
+                            SearchResultFilterDialog(
+                                searchQuery: searchQuery)))).then((value) {
               if (value != null) {
                 setState(() {
                   searchQuery = value;
@@ -65,63 +75,49 @@ class _SearchResultPageState extends State<SearchResultPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.sort),
-            onPressed: () =>
-              showDialog(
-                context: context,
-                builder: (context) =>
-                  selectDialog()
-              )
-          )
+              icon: Icon(Icons.sort),
+              onPressed: () => showDialog(
+                  context: context, builder: (context) => selectDialog()))
         ],
       ),
       body: FutureBuilder<List<PropertyModel>>(
         future: this.future,
-        builder: (BuildContext context, AsyncSnapshot<List<PropertyModel>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<List<PropertyModel>> snapshot) {
           if (snapshot.hasError) {
             print(snapshot.error);
             return Align(
               alignment: Alignment.center,
-              child: MyText(
-                text: 'Error'
-              ),
+              child: MyText(text: 'Error'),
             );
           }
 
-          if (
-            snapshot.connectionState == ConnectionState.none ||
-            snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.connectionState == ConnectionState.active
-          ) {
+          if (snapshot.connectionState == ConnectionState.none ||
+              snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.connectionState == ConnectionState.active) {
             return Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(
-                color: AppStyle.appColorGreen,
-              )
-            );
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(
+                  color: AppStyle.appColorGreen,
+                ));
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data!.isNotEmpty) {
               print(snapshot.data!.map((property) => property.id).toList());
               return buildProperties(snapshot.data!);
-            }
-            else {
+            } else {
               return Align(
-                alignment: Alignment.center,
-                child: MyText(
-                  text: "No results matched the filter"
-                )
-              );
+                  alignment: Alignment.center,
+                  child: MyText(text: "No results matched the filter"));
             }
           }
 
           return Align(
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(
-              color: AppStyle.appColorGreen,
-            )
-          );
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(
+                color: AppStyle.appColorGreen,
+              ));
         },
       ),
     );
@@ -158,35 +154,31 @@ class _SearchResultPageState extends State<SearchResultPage> {
     return SingleChildScrollView(
       child: Container(
         child: ResponsiveGridRow(
-          children: properties.map(
-            (property) => ResponsiveGridCol(
-              xs: 12,
-              sm: 12,
-              md: 6,
-              lg: 6,
-              xl: 4,
-              child: PropertyCard(
-                  property,
-                  onTap: () async {
-                      var result = await Navigator.push(
-                        context,
-                        CustomPageRouteBuilder(
-                            child: PropertyPage(property: property),
-                            direction: SlideDirections.FROM_DOWN
-                        )
-                      );
-                      if (result != null && result) {
-                        print('hello');
-                        setState(() {
-                          future = Provider.of<DatabaseService>(context, listen: false)
-                              .findProperties(searchQuery: searchQuery);
-                        });
-                      }
-                  },
-              )
-            )
-          ).toList()
-        ),
+            children: properties
+                .map((property) => ResponsiveGridCol(
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 6,
+                    xl: 4,
+                    child: PropertyCard(
+                      property,
+                      onTap: () async {
+                        var result = await Navigator.push(
+                            context,
+                            CustomPageRouteBuilder(
+                                child: PropertyPage(property: property),
+                                direction: SlideDirections.FROM_DOWN));
+                        if (result != null && result) {
+                          setState(() {
+                            future = Provider.of<DatabaseService>(context,
+                                    listen: false)
+                                .findProperties(searchQuery: searchQuery);
+                          });
+                        }
+                      },
+                    )))
+                .toList()),
       ),
     );
   }
@@ -194,27 +186,28 @@ class _SearchResultPageState extends State<SearchResultPage> {
   String searchSortEnumToString(SearchSort enumValue) {
     var temp = enumValue.toString().split('.')[1];
     var tempArray = temp.split('_');
-    return temp.substring(0, 1) + tempArray[0].toLowerCase().substring(1) + ' (${tempArray[1].toLowerCase()})';
+    return temp.substring(0, 1) +
+        tempArray[0].toLowerCase().substring(1) +
+        ' (${tempArray[1].toLowerCase()})';
   }
 
-  getListTiles() =>
-    SearchSort.values.map(
-      (enumValue) => ListTile(
-        title: Text(searchSortEnumToString(enumValue)),
-        trailing: Radio<SearchSort>(
-          value: enumValue,
-          groupValue: sortingMode,
-          onChanged: (value) {
-            if (value != null) {
-              setState(() {
-                sortingMode = value;
-              });
-            }
-            Navigator.pop(context);
-          },
-        ),
-      )
-    ).toList();
+  getListTiles() => SearchSort.values
+      .map((enumValue) => ListTile(
+            title: Text(searchSortEnumToString(enumValue)),
+            trailing: Radio<SearchSort>(
+              value: enumValue,
+              groupValue: sortingMode,
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    sortingMode = value;
+                  });
+                }
+                Navigator.pop(context);
+              },
+            ),
+          ))
+      .toList();
 
   Widget selectDialog() {
     List<Widget> children = [
@@ -233,8 +226,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
     return Dialog(
       backgroundColor: Colors.grey[200],
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(RADIUS))
-      ),
+          borderRadius: BorderRadius.all(Radius.circular(RADIUS))),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -245,7 +237,9 @@ class _SearchResultPageState extends State<SearchResultPage> {
     );
   }
 
+/*
   Widget filterDialog() {
+
     MyRangeSlider priceSlider = MyRangeSlider(
       maxValue: 5e7,
       suffix: 'Ft',
@@ -339,6 +333,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
         print(
             'ForSale: ${newSearchQuery.forSale == null ? 'Any' : newSearchQuery.forSale}'
         );
+        Provider.of<DatabaseService>(context, listen: false).addSearchQuery(newSearchQuery);
         Navigator.pop(context, newSearchQuery);
       },
     );
@@ -369,4 +364,5 @@ class _SearchResultPageState extends State<SearchResultPage> {
         )
     );
   }
+   */
 }

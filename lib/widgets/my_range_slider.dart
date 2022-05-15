@@ -1,3 +1,4 @@
+import 'package:albify/widgets/my_title_text.dart';
 import 'package:flutter/material.dart';
 
 class MyRangeSlider extends StatefulWidget {
@@ -54,16 +55,7 @@ class _MyRangeSliderState extends State<MyRangeSlider> {
         child: Column(
           children: [
             widget.title != null ?
-            Container(
-              margin: EdgeInsets.all(8),
-              child: Text(
-                widget.title!,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18
-                ),
-              ),
-            ) :
+            MyTitleText(title: widget.title!) :
             Container(),
             rangeSlider,
             Row(

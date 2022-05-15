@@ -1,4 +1,5 @@
 import 'package:albify/common/constants.dart';
+import 'package:albify/widgets/my_title_text.dart';
 import 'package:flutter/material.dart';
 
 class MyDropdownMenu extends StatefulWidget {
@@ -6,12 +7,14 @@ class MyDropdownMenu extends StatefulWidget {
   final Function? onChanged;
   final bool isExpanded;
   final String? title;
+  final int? selected;
 
   MyDropdownMenu(
       {required this.options,
       this.onChanged,
       this.isExpanded = true,
-      this.title});
+      this.title,
+      this.selected});
 
   @override
   State<MyDropdownMenu> createState() => _MyDropdownMenuState();
@@ -22,7 +25,7 @@ class _MyDropdownMenuState extends State<MyDropdownMenu> {
 
   @override
   void initState() {
-    value = -1;
+    value = widget.selected ?? -1;
     super.initState();
   }
 
@@ -33,13 +36,7 @@ class _MyDropdownMenuState extends State<MyDropdownMenu> {
       child: Column(
         children: [
           widget.title != null
-              ? Container(
-                  margin: EdgeInsets.all(8),
-                  child: Text(
-                    widget.title!,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                )
+              ? MyTitleText(title: widget.title!)
               : Container(),
           Container(
             margin: EdgeInsets.all(8),

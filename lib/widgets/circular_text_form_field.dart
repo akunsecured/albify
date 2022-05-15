@@ -15,6 +15,7 @@ class CircularTextFormField extends StatefulWidget {
   final FocusNode? nextFocusNode;
   final int? maxLines;
   final int? maxLength;
+  final Color? fillColor;
 
   CircularTextFormField({
     required this.hintText,
@@ -29,7 +30,8 @@ class CircularTextFormField extends StatefulWidget {
     this.focusNode,
     this.nextFocusNode,
     this.maxLines = 1,
-    this.maxLength
+    this.maxLength,
+    this.fillColor
   });
 
   set matchWith(String? value) => matchWith = value;
@@ -53,6 +55,8 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
       keyboardType: widget.inputType ?? TextInputType.text,
       obscureText: (widget.obsecureText ?? false) ? !_passwordVisible : false,
       decoration: InputDecoration(
+        filled: widget.fillColor != null,
+        fillColor: widget.fillColor,
         prefixIcon: widget.icon,
         hintText: widget.hintText,
         border: OutlineInputBorder(

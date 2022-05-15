@@ -1,6 +1,6 @@
 import 'package:albify/screens/main/chats_view.dart';
 import 'package:albify/screens/main/favorites_view.dart';
-import 'package:albify/screens/main/home_view.dart';
+import 'package:albify/screens/main/search_view.dart';
 import 'package:albify/screens/main/map_view.dart';
 import 'package:albify/screens/main/profile_view.dart';
 import 'package:albify/themes/app_style.dart';
@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
         physics: NeverScrollableScrollPhysics(),
         controller: pageController,
         children: [
-          HomeView(),
+          SearchView(),
           FavoritesView(),
           MapView(),
           ChatsView(),
@@ -50,8 +50,8 @@ class _MainPageState extends State<MainPage> {
           onTap: onTapped,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home'
+              icon: Icon(Icons.search),
+              label: 'Search'
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.star),
