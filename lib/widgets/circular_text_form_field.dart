@@ -1,5 +1,6 @@
 import 'package:albify/common/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CircularTextFormField extends StatefulWidget {
   final String hintText;
@@ -16,23 +17,26 @@ class CircularTextFormField extends StatefulWidget {
   final int? maxLines;
   final int? maxLength;
   final Color? fillColor;
+  final RegExp? regExp;
+  final String? suffix;
 
-  CircularTextFormField({
-    required this.hintText,
-    required this.validateFun,
-    required this.textEditingController,
-    this.icon,
-    this.inputType,
-    this.obsecureText,
-    this.isConfirm,
-    this.matchWith,
-    this.textInputAction = TextInputAction.next,
-    this.focusNode,
-    this.nextFocusNode,
-    this.maxLines = 1,
-    this.maxLength,
-    this.fillColor
-  });
+  CircularTextFormField(
+      {required this.hintText,
+      required this.validateFun,
+      required this.textEditingController,
+      this.icon,
+      this.inputType,
+      this.obsecureText,
+      this.isConfirm,
+      this.matchWith,
+      this.textInputAction = TextInputAction.next,
+      this.focusNode,
+      this.nextFocusNode,
+      this.maxLines = 1,
+      this.maxLength,
+      this.fillColor,
+      this.regExp,
+      this.suffix});
 
   set matchWith(String? value) => matchWith = value;
 
@@ -55,28 +59,13 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
       keyboardType: widget.inputType ?? TextInputType.text,
       obscureText: (widget.obsecureText ?? false) ? !_passwordVisible : false,
       decoration: InputDecoration(
-        filled: widget.fillColor != null,
-        fillColor: widget.fillColor,
-        prefixIcon: widget.icon,
-        hintText: widget.hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(RADIUS)
-        ),
-        suffixIcon: (widget.obsecureText ?? false) ?
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _passwordVisible = !_passwordVisible;
-              });
-            },
-            icon: Icon(
-              _passwordVisible ?
-              Icons.visibility :
-              Icons.visibility_off
-            )
-          ) :
-          null
-      ),
+          filled: widget.fillColor != null,
+          fillColor: widget.fillColor,
+          prefixIcon: widget.icon,
+          hintText: widget.hintText,
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(RADIUS)),
+          suffixIcon: getSuffixIcon()),
       validator: (value) {
         if (widget.validateFun != null) {
           return widget.validateFun!(value);
@@ -95,6 +84,39 @@ class _CircularTextFormFieldState extends State<CircularTextFormField> {
       minLines: 1,
       maxLines: widget.maxLines,
       maxLength: widget.maxLength,
+      inputFormatters: widget.regExp == null
+          ? null
+          : <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(widget.regExp!)
+            ],
     );
+  }
+
+  Widget? getSuffixIcon() {
+    if (widget.obsecureText != null && widget.obsecureText!) {
+      return IconButton(
+          onPressed: () {
+            setState(() {
+              _passwordVisible = !_passwordVisible;
+            });
+          },
+          icon:
+              Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off));
+    }
+
+    if (widget.suffix != null) {
+      return ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 30, maxHeight: 30),
+        child: Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Text(widget.suffix!,
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            )),
+      );
+    }
+
+    return null;
   }
 }

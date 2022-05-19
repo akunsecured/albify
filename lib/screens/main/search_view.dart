@@ -2,7 +2,7 @@ import 'package:albify/animations/custom_page_route_builder.dart';
 import 'package:albify/animations/slide_directions.dart';
 import 'package:albify/models/property_search_models.dart';
 import 'package:albify/providers/search_queries_provider.dart';
-import 'package:albify/screens/main/login_is_needed.dart';
+import 'package:albify/widgets/login_is_needed.dart';
 import 'package:albify/screens/search_result/search_result_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/widgets/my_title_text.dart';
@@ -18,6 +18,13 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
+  late DatabaseService _databaseService;
+
+  @override
+  void initState() {
+    _databaseService = Provider.of<DatabaseService>(context, listen: false);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +60,8 @@ class _SearchViewState extends State<SearchView> {
                 child: FirebaseAuth.instance.currentUser!.isAnonymous
                     ? LoginIsNeeded()
                     : ChangeNotifierProvider(
-                        create: (BuildContext _) => SearchQueriesProvider(
-                            Provider.of<DatabaseService>(context, listen: false)),
+                        create: (BuildContext _) =>
+                            SearchQueriesProvider(_databaseService),
                         builder: (context, child) {
                           return Container(
                               child: StreamProvider<List<SearchQuery>>.value(

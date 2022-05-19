@@ -4,7 +4,7 @@ class UserModel {
   String id, name;
   String? avatarUrl, contactEmail;
   int? phoneNumber;
-  List? propertyIDs, favoritePropertyIDs, lastSearchIDs, conversationIDs;
+  List? propertyIDs, favoritePropertyIDs, lastSearchIDs;
 
   UserModel({
     required this.id,
@@ -14,8 +14,7 @@ class UserModel {
     this.phoneNumber,
     this.propertyIDs,
     this.favoritePropertyIDs,
-    this.lastSearchIDs,
-    this.conversationIDs
+    this.lastSearchIDs
   });
 
   factory UserModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
@@ -28,8 +27,7 @@ class UserModel {
       phoneNumber: data['phoneNumber'] ?? -1,
       propertyIDs: data['propertyIDs'] ?? [],
       favoritePropertyIDs: data['favoritePropertyIDs'] ?? [],
-      lastSearchIDs: data['lastSearchIDs'] ?? [],
-      conversationIDs: data['conversationIDs'] ?? []
+      lastSearchIDs: data['lastSearchIDs'] ?? []
     );
   }
 
@@ -40,7 +38,6 @@ class UserModel {
     'phoneNumber': phoneNumber,
     'propertyIDs': propertyIDs,
     'favoritePropertyIDs': favoritePropertyIDs,
-    'lastSearchIDs': lastSearchIDs,
-    'conversationIDs': conversationIDs
+    'lastSearchIDs': lastSearchIDs
   };
 }

@@ -13,6 +13,7 @@ class RoundedButton extends StatelessWidget {
   final double? width;
   final FocusNode? focusNode;
   final bool iconOnly;
+  bool enabled;
 
   RoundedButton({
     this.icon,
@@ -23,7 +24,8 @@ class RoundedButton extends StatelessWidget {
     this.primary,
     this.width,
     this.focusNode,
-    this.iconOnly = false
+    this.iconOnly = false,
+    this.enabled = true
   }) {
     if (primary == null)
       primary = AppStyle.appColorBlack;
@@ -35,7 +37,7 @@ class RoundedButton extends StatelessWidget {
       width: width ?? double.infinity,
       height: 48,
       child: ElevatedButton(
-        onPressed: this.onPressed ?? () => {},
+        onPressed: enabled ? this.onPressed ?? () => {} : null,
         child: icon == null ?
           Text(
             text,

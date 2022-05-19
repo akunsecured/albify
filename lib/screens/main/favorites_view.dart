@@ -1,6 +1,6 @@
 import 'package:albify/models/property_model.dart';
 import 'package:albify/models/user_model.dart';
-import 'package:albify/screens/main/login_is_needed.dart';
+import 'package:albify/widgets/login_is_needed.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_text.dart';

@@ -20,6 +20,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PropertyPage extends StatefulWidget {
   final PropertyModel property;
@@ -174,7 +175,6 @@ class _PropertyPageState extends State<PropertyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: getActionButtons(),
                   ),
-                  Divider(),
                   MyText(
                     text: 'Details',
                     fontWeight: FontWeight.bold,
@@ -366,21 +366,19 @@ class _PropertyPageState extends State<PropertyPage> {
     if (kIsWeb) {
       return currentUser!.uid != widget.property.ownerID ? [
         buildChatButton(2.5),
-        buildFavoriteButton(2.5)
+        buildFavoriteButton(2.5),
+        Divider()
       ] :
-      [
-        buildEditButton(2.5)
-      ];
+      [];
     } else {
       var buttons = <Widget>[];
-      if (currentUser!.uid == widget.property.ownerID) {
-        buttons.add(buildEditButton(2.5, iconOnly: true));
-      } else {
+      if (currentUser!.uid != widget.property.ownerID) {
         buttons.add(buildChatButton(4.5, iconOnly: true));
         if (_propertyOwner?.phoneNumber != null && _propertyOwner?.phoneNumber != -1) {
-          buttons.add(buildCallButton(4.5, iconOnly: true));
+          buttons.add(buildCallButton(4.5, iconOnly: true, tel: _propertyOwner?.phoneNumber!));
         }
         buttons.add(buildFavoriteButton(4.5, iconOnly: true));
+        buttons.add(Divider());
       }
       return buttons;
     }
@@ -411,7 +409,7 @@ class _PropertyPageState extends State<PropertyPage> {
       ),
     );
 
-  Widget buildCallButton(double divider, { bool iconOnly = false }) =>
+  Widget buildCallButton(double divider, { bool iconOnly = false, int? tel }) =>
     Container(
       margin: EdgeInsets.symmetric(
         horizontal: 8
@@ -422,6 +420,9 @@ class _PropertyPageState extends State<PropertyPage> {
         isItNavigation: false,
         width: getPreferredSize(_size) / divider,
         iconOnly: iconOnly,
+        onPressed: () {
+          launch('tel:+${tel!}');
+        },
       ),
     );
   
@@ -465,15 +466,6 @@ class _PropertyPageState extends State<PropertyPage> {
             });
           },
         ),
-    );
-
-  Widget buildEditButton(double divider, { bool iconOnly = false }) =>
-    RoundedButton(
-      text: 'Edit',
-      icon: Icons.edit,
-      isItNavigation: false,
-      width: getPreferredSize(_size) / divider,
-      iconOnly: iconOnly,
     );
 
   void onDelete(bool success) {

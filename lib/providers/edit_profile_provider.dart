@@ -7,21 +7,34 @@ import 'package:flutter/material.dart';
 class EditProfileProvider extends ChangeNotifier {
   final DatabaseService databaseService;
 
-  bool isLoading = false, isDisposed = false;
-  late final TextEditingController _nameController, _emailController, _passwordController, _phoneNumberController, _contactEmailController;
+  bool isLoading = false, isDisposed = false, isEnabled = false;
+  late final TextEditingController _nameController,
+      _emailController,
+      _passwordController,
+      _phoneNumberController,
+      _contactEmailController;
 
   EditProfileProvider(this.databaseService) {
     _nameController = TextEditingController();
+    _nameController.addListener(updateIsEnabled);
     _emailController = TextEditingController();
+    _emailController.addListener(updateIsEnabled);
     _passwordController = TextEditingController();
+    _passwordController.addListener(updateIsEnabled);
     _phoneNumberController = TextEditingController();
+    _phoneNumberController.addListener(updateIsEnabled);
     _contactEmailController = TextEditingController();
+    _contactEmailController.addListener(updateIsEnabled);
   }
 
   TextEditingController get nameController => _nameController;
+
   TextEditingController get emailController => _emailController;
+
   TextEditingController get passwordController => _passwordController;
+
   TextEditingController get phoneNumberController => _phoneNumberController;
+
   TextEditingController get contactEmailController => _contactEmailController;
 
   changeLoadingStatus() async {
@@ -40,6 +53,19 @@ class EditProfileProvider extends ChangeNotifier {
     super.dispose();
   }
 
+  void updateIsEnabled() {
+    if (_nameController.text.trim().isNotEmpty ||
+        _emailController.text.trim().isNotEmpty ||
+        _passwordController.text.trim().isNotEmpty ||
+        _phoneNumberController.text.trim().isNotEmpty ||
+        _contactEmailController.text.trim().isNotEmpty) {
+      isEnabled = true;
+    } else {
+      isEnabled = false;
+    }
+    notifyListeners();
+  }
+
   Future<bool> saveProfile() async {
     await changeLoadingStatus();
     await Future.delayed(Duration(milliseconds: 500));
@@ -47,25 +73,25 @@ class EditProfileProvider extends ChangeNotifier {
     var oldUser = await databaseService.getUserData();
     User? currentUser = FirebaseAuth.instance.currentUser;
 
-    if (
-      _emailController.text.toLowerCase() != currentUser!.email
-    ) currentUser.updateEmail(_emailController.text.toLowerCase());
+    if (_emailController.text.isNotEmpty && _emailController.text.toLowerCase() != currentUser!.email)
+      currentUser.updateEmail(_emailController.text.toLowerCase());
 
-    if (
-      _passwordController.text.isNotEmpty
-    ) currentUser.updatePassword(_passwordController.text);
+    if (_passwordController.text.isNotEmpty)
+      currentUser!.updatePassword(_passwordController.text);
 
     if (oldUser != null) {
-      databaseService.editProfile(
-        UserModel(
-          id: oldUser.id,
-          name: _nameController.text,
-          avatarUrl: oldUser.avatarUrl,
-          contactEmail: _contactEmailController.text,
-          phoneNumber: int.parse(_phoneNumberController.text),
-          propertyIDs: oldUser.propertyIDs
-        )
-      );
+      String name = _nameController.text.isEmpty
+          ? oldUser.name
+          : _nameController.text.toString();
+      String? contactEmail = _contactEmailController.text.isEmpty
+          ? oldUser.contactEmail
+          : _contactEmailController.text.toString();
+      int? phoneNumber = _phoneNumberController.text.isEmpty
+          ? oldUser.phoneNumber
+          : int.parse(_phoneNumberController.text);
+
+      databaseService.editProfile(oldUser.id,
+          name: name, contactEmail: contactEmail, phoneNumber: phoneNumber);
 
       return true;
     }
@@ -76,12 +102,12 @@ class EditProfileProvider extends ChangeNotifier {
   Future<bool> deleteProfile(String password) async {
     User? currentUser = FirebaseAuth.instance.currentUser;
 
-    AuthCredential credential = EmailAuthProvider.credential(email: currentUser!.email!, password: password);
+    AuthCredential credential = EmailAuthProvider.credential(
+        email: currentUser!.email!, password: password);
 
     try {
-      var newUser = await currentUser.reauthenticateWithCredential(
-        credential
-      );
+      var newUser = await currentUser.reauthenticateWithCredential(credential);
+      newUser.user!.delete();
       return true;
     } on Exception catch (e) {
       print(e.toString());

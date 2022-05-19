@@ -10,23 +10,31 @@ class Utils {
   static RegExp passwordRegExp = RegExp(
       r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{6,20}$');
   static RegExp priceSearchRegExp = RegExp(r'^0|(^[1-9][0-9]{0,6})');
-  static RegExp floorspaceSearchRegExp = RegExp(r'^0|(^[1-9][0-9]{0,5})');
+  static RegExp floorspaceRegExp = RegExp(r'^0|(^[1-9][0-9]{0,5})');
+  static RegExp priceRegExp = RegExp(r'^[1-9][0-9]{0,9}');
+  static RegExp roomRegExp = RegExp(r'^[1-9][0-9]{0,1}');
 
-  static validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email must be filled';
-    if (!Utils.emailRegExp.hasMatch(value)) return 'Email is badly formatted';
+  static validateEmail(String? value, {bool isNeeded = true}) {
+    if (isNeeded && (value == null || value.isEmpty))
+      return 'Email must be filled';
+    if (value != null && value.isNotEmpty && !Utils.emailRegExp.hasMatch(value))
+      return 'Email is badly formatted';
     return null;
   }
 
-  static validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password must be filled';
-    if (value.length < 6) return 'Password should be at least 6 characters';
+  static validatePassword(String? value, {bool isNeeded = true}) {
+    if (isNeeded && (value == null || value.isEmpty))
+      return 'Password must be filled';
+    if (value != null && value.isNotEmpty && value.length < 6)
+      return 'Password should be at least 6 characters';
     return null;
   }
 
-  static validateName(String? value) {
-    if (value == null || value.isEmpty) return 'Name must be filled';
-    if (value.length < 2) return 'Name should be at least 2 characters';
+  static validateName(String? value, {bool isNeeded = true}) {
+    if (isNeeded && (value == null || value.isEmpty))
+      return 'Name must be filled';
+    if (value != null && value.isNotEmpty && value.length < 2)
+      return 'Name should be at least 2 characters';
     return null;
   }
 
@@ -34,6 +42,14 @@ class Utils {
     if (value == null || value.isEmpty)
       return 'Confirm password must be filled';
     if (value != matchWith) return 'Passwords do not match';
+    return null;
+  }
+
+  static validatePhoneNumber(String? value, { bool isNeeded = true }) {
+    if (isNeeded && (value == null || value.isEmpty))
+      return 'Phone number must be filled';
+    if (value != null && value.isNotEmpty && value.length != 11)
+      return 'Phone number must be 11 characters';
     return null;
   }
 

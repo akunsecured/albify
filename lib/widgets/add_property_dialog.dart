@@ -67,6 +67,8 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       validateFun: Utils.validatePrice,
                       textEditingController: _propertyCreateProvider.priceController,
                       inputType: TextInputType.number,
+                      regExp: Utils.priceRegExp,
+                      suffix: 'Ft',
                     ),
                     Utils.addVerticalSpace(8),
                     CircularTextFormField(
@@ -75,6 +77,7 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       validateFun: Utils.validateRooms,
                       textEditingController: _propertyCreateProvider.roomsController,
                       inputType: TextInputType.number,
+                      regExp: Utils.roomRegExp,
                     ),
                     Utils.addVerticalSpace(8),
                     CircularTextFormField(
@@ -83,6 +86,8 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       validateFun: Utils.validateFloorspace,
                       textEditingController: _propertyCreateProvider.floorspaceController,
                       inputType: TextInputType.number,
+                      regExp: Utils.floorspaceRegExp,
+                      suffix: 'm\u00B2',
                     ),
                     Utils.addVerticalSpace(8),
                     Selector<PropertyCreateProvider, int>(

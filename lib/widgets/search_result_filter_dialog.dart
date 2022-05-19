@@ -71,7 +71,7 @@ class _SearchResultFilterDialogState extends State<SearchResultFilterDialog> {
             builder: (context) => MinMaxDialog(
                   suffix: 'm\u00B2',
                   title: 'Floorspace',
-                  regExp: Utils.floorspaceSearchRegExp,
+                  regExp: Utils.floorspaceRegExp,
                   values: provider.searchQuery.floorspaceBetween,
                 ));
         if (result != null) {

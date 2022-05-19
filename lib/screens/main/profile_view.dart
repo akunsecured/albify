@@ -1,7 +1,7 @@
 import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/user_model.dart';
-import 'package:albify/screens/main/login_is_needed.dart';
+import 'package:albify/widgets/login_is_needed.dart';
 import 'package:albify/screens/profile/edit_profile_page.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';

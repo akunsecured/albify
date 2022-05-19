@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/message_model.dart';
 import 'package:albify/models/property_model.dart';
@@ -7,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -105,7 +109,7 @@ class DatabaseService {
 
           if (searchQuery.roomNum != null) {
             properties.removeWhere(
-                (property) => property.rooms >= searchQuery.roomNum!);
+                (property) => property.rooms < searchQuery.roomNum!);
           }
 
           if (searchQuery.floorspaceBetween.from != null) {
@@ -191,7 +195,16 @@ class DatabaseService {
         .ref()
         .child('$uid/properties/$propertyID/$path.$type');
 
-    var task = reference.putData(image.bytes!);
+    Uint8List bytes;
+
+    if (kIsWeb) {
+      bytes = image.bytes!;
+    } else {
+      File file = File(image.path!);
+      bytes = await file.readAsBytes();
+    }
+
+    var task = reference.putData(bytes);
 
     final snapshot = await task.whenComplete(() {});
     return await snapshot.ref.getDownloadURL();
@@ -236,7 +249,16 @@ class DatabaseService {
         .ref()
         .child('$uid/profile/profilePicture.$type');
 
-    var task = reference.putData(image.bytes!);
+    Uint8List bytes;
+
+    if (kIsWeb) {
+      bytes = image.bytes!;
+    } else {
+      File file = File(image.path!);
+      bytes = await file.readAsBytes();
+    }
+
+    var task = reference.putData(bytes);
 
     final snapshot = await task.whenComplete(() {});
     var url = await snapshot.ref.getDownloadURL();
@@ -251,10 +273,14 @@ class DatabaseService {
     }
   }
 
-  Future<bool> editProfile(UserModel userModel) async {
+  Future<bool> editProfile(String id, { String? name, String? contactEmail, int? phoneNumber }) async {
     WriteBatch _batch = _firestore.batch();
     try {
-      _batch.update(usersRef.doc(userModel.id), userModel.toMap());
+      _batch.update(usersRef.doc(id), {
+        "name": name,
+        "contactEmail": contactEmail,
+        "phoneNumber": phoneNumber
+      });
 
       await _batch.commit();
     } on FirebaseException catch (e) {

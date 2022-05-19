@@ -2,7 +2,7 @@ import 'package:albify/common/constants.dart';
 import 'package:albify/common/utils.dart';
 import 'package:albify/models/message_model.dart';
 import 'package:albify/providers/chat_messages_provider.dart';
-import 'package:albify/screens/chat/message_list.dart';
+import 'package:albify/widgets/message_list.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:albify/widgets/my_circular_progress_indicator.dart';

@@ -1,7 +1,7 @@
 import 'package:albify/common/constants.dart';
 import 'package:albify/providers/auth_provider.dart';
-import 'package:albify/screens/auth/login_view.dart';
-import 'package:albify/screens/auth/register_view.dart';
+import 'package:albify/widgets/login_view.dart';
+import 'package:albify/widgets/register_view.dart';
 import 'package:albify/services/auth_service.dart';
 import 'package:albify/themes/app_style.dart';
 import 'package:flutter/material.dart';
