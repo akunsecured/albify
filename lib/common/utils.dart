@@ -45,7 +45,7 @@ class Utils {
     return null;
   }
 
-  static validatePhoneNumber(String? value, { bool isNeeded = true }) {
+  static validatePhoneNumber(String? value, {bool isNeeded = true}) {
     if (isNeeded && (value == null || value.isEmpty))
       return 'Phone number must be filled';
     if (value != null && value.isNotEmpty && value.length != 11)

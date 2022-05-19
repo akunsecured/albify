@@ -14,15 +14,14 @@ class MyPasswordRequireDialog extends StatelessWidget {
       content: Form(
         key: _formKey,
         child: CircularTextFormField(
-            hintText: 'Password',
-            validateFun: validatePasswordField,
-            textEditingController: textEditingController,
-            obsecureText: true,
+          hintText: 'Password',
+          validateFun: validatePasswordField,
+          textEditingController: textEditingController,
+          obsecureText: true,
         ),
       ),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RADIUS)
-      ),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(RADIUS)),
       elevation: 0,
       actions: [
         TextButton(
@@ -31,14 +30,12 @@ class MyPasswordRequireDialog extends StatelessWidget {
                 Navigator.of(context).pop(textEditingController.text);
               }
             },
-            child: Text('Ok')
-        ),
+            child: Text('Ok')),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('Cancel')
-        ),
+            child: Text('Cancel')),
       ],
     );
   }

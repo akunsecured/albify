@@ -4,40 +4,35 @@ class UserModel {
   String id, name;
   String? avatarUrl, contactEmail;
   int? phoneNumber;
-  List? propertyIDs, favoritePropertyIDs, lastSearchIDs;
+  List? propertyIDs, lastSearchIDs;
 
-  UserModel({
-    required this.id,
-    required this.name,
-    this.avatarUrl,
-    this.contactEmail,
-    this.phoneNumber,
-    this.propertyIDs,
-    this.favoritePropertyIDs,
-    this.lastSearchIDs
-  });
+  UserModel(
+      {required this.id,
+      required this.name,
+      this.avatarUrl,
+      this.contactEmail,
+      this.phoneNumber,
+      this.propertyIDs,
+      this.lastSearchIDs});
 
   factory UserModel.fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
     return UserModel(
-      id: documentSnapshot.id,
-      name: data['name'] ?? '',
-      avatarUrl: data['avatarUrl'] ?? '',
-      contactEmail: data['contactEmail'] ?? '',
-      phoneNumber: data['phoneNumber'] ?? -1,
-      propertyIDs: data['propertyIDs'] ?? [],
-      favoritePropertyIDs: data['favoritePropertyIDs'] ?? [],
-      lastSearchIDs: data['lastSearchIDs'] ?? []
-    );
+        id: documentSnapshot.id,
+        name: data['name'] ?? '',
+        avatarUrl: data['avatarUrl'] ?? '',
+        contactEmail: data['contactEmail'] ?? '',
+        phoneNumber: data['phoneNumber'] ?? -1,
+        propertyIDs: data['propertyIDs'] ?? [],
+        lastSearchIDs: data['lastSearchIDs'] ?? []);
   }
 
   Map<String, dynamic> toMap() => {
-    'name': name,
-    'avatarUrl': avatarUrl,
-    'contactEmail': contactEmail,
-    'phoneNumber': phoneNumber,
-    'propertyIDs': propertyIDs,
-    'favoritePropertyIDs': favoritePropertyIDs,
-    'lastSearchIDs': lastSearchIDs
-  };
+        'name': name,
+        'avatarUrl': avatarUrl,
+        'contactEmail': contactEmail,
+        'phoneNumber': phoneNumber,
+        'propertyIDs': propertyIDs,
+        'lastSearchIDs': lastSearchIDs
+      };
 }

@@ -14,7 +14,11 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   final _registerFormKey = GlobalKey<FormState>();
 
-  late final FocusNode _nameFocus, _emailFocus, _passwordFocus, _confirmPasswordFocus, _signUpButtonFocus;
+  late final FocusNode _nameFocus,
+      _emailFocus,
+      _passwordFocus,
+      _confirmPasswordFocus,
+      _signUpButtonFocus;
 
   @override
   void initState() {
@@ -28,25 +32,23 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final CircularTextFormField confirmPasswordField = 
-      CircularTextFormField(
-        hintText: 'Confirm password',
-        icon: Icon(Icons.lock),
-        validateFun: (String? value) {
-          print('Confirm password:\t$value');
-          print('Password:\t${_authProvider.passwordController.text}');
-          if (value == null || value.isEmpty)
-            return 'Confirm password must be filled';
-          if (value != _authProvider.passwordController.text)
-            return 'Passwords do not match';
-          return null;
-        },
-        textEditingController: _authProvider.confirmPasswordController,
-        obsecureText: true,
-        focusNode: _confirmPasswordFocus,
-        nextFocusNode: _signUpButtonFocus,
-      );
+    final AuthProvider _authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+    final CircularTextFormField confirmPasswordField = CircularTextFormField(
+      hintText: 'Confirm password',
+      icon: Icon(Icons.lock),
+      validateFun: (String? value) {
+        if (value == null || value.isEmpty)
+          return 'Confirm password must be filled';
+        if (value != _authProvider.passwordController.text)
+          return 'Passwords do not match';
+        return null;
+      },
+      textEditingController: _authProvider.confirmPasswordController,
+      obsecureText: true,
+      focusNode: _confirmPasswordFocus,
+      nextFocusNode: _signUpButtonFocus,
+    );
     return Container(
       margin: EdgeInsets.all(24),
       child: Form(
@@ -56,10 +58,7 @@ class _RegisterViewState extends State<RegisterView> {
           children: [
             Text(
               "Register",
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold
-              ),
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
             ),
             Column(
               children: [
@@ -99,28 +98,22 @@ class _RegisterViewState extends State<RegisterView> {
             Column(
               children: [
                 Selector<AuthProvider, bool>(
-                  selector: (_, authProvider) => authProvider.isLoading,
-                  builder: (_, onLoading, __) => onLoading ?
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
-                    )
-                    : RoundedButton(
-                      text: 'Register',
-                      onPressed: () {
-                        print(
-                          'Name: ${_authProvider.nameController.text}\n' +
-                          'Email: ${_authProvider.emailController.text}\n' +
-                          'Password: ${_authProvider.passwordController.text}\n' +
-                          'Confirm password: ${_authProvider.confirmPasswordController.text}'
-                        );
-                        if (_registerFormKey.currentState!.validate()) {
-                          _authProvider.submit();
-                        }
-                      },
-                      primary: AppStyle.appColorGreen,
-                      focusNode: _signUpButtonFocus,
-                    )
-                ),
+                    selector: (_, authProvider) => authProvider.isLoading,
+                    builder: (_, onLoading, __) => onLoading
+                        ? CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation(AppStyle.appColorGreen),
+                          )
+                        : RoundedButton(
+                            text: 'Register',
+                            onPressed: () {
+                              if (_registerFormKey.currentState!.validate()) {
+                                _authProvider.submit();
+                              }
+                            },
+                            primary: AppStyle.appColorGreen,
+                            focusNode: _signUpButtonFocus,
+                          )),
                 Utils.addVerticalSpace(8),
                 RoundedButton(
                   text: 'I have an account',

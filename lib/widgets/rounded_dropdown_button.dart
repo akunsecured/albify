@@ -6,11 +6,8 @@ class RoundedDropdownButton extends StatelessWidget {
   final void Function(dynamic) onChanged;
   final int value;
 
-  RoundedDropdownButton({
-    required this.items,
-    required this.onChanged,
-    required this.value
-  });
+  RoundedDropdownButton(
+      {required this.items, required this.onChanged, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +16,8 @@ class RoundedDropdownButton extends StatelessWidget {
       onChanged: this.onChanged,
       value: this.value,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(RADIUS)
-        )
-      ),
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(RADIUS))),
     );
   }
 }

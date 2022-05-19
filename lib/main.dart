@@ -10,9 +10,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
@@ -26,9 +24,8 @@ class MyApp extends StatelessWidget {
           title: 'Albify',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            primarySwatch: AppStyle.appColorBlack,
-            scaffoldBackgroundColor: AppStyle.appColorBlack
-          ),
+              primarySwatch: AppStyle.appColorBlack,
+              scaffoldBackgroundColor: AppStyle.appColorBlack),
           initialRoute: StartingPage.ROUTE_ID,
           routes: AppRoutes.routes,
         );

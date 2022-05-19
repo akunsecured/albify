@@ -10,12 +10,7 @@ class PropertyCard extends StatefulWidget {
   final PropertyModel property;
   final VoidCallback? onTap;
 
-  PropertyCard(
-    this.property,
-    {
-      this.onTap
-    }
-  );
+  PropertyCard(this.property, {this.onTap});
 
   @override
   State<PropertyCard> createState() => _PropertyCardState();
@@ -30,9 +25,8 @@ class _PropertyCardState extends State<PropertyCard> {
       },
       child: Card(
         margin: EdgeInsets.all(8.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(RADIUS)
-        ),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(RADIUS)),
         child: Column(
           children: [
             MyCarouselSlider(urls: widget.property.photoUrls),
@@ -42,7 +36,8 @@ class _PropertyCardState extends State<PropertyCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   MyText(
-                    text: widget.property.location.locationName ?? 'Unknown location',
+                    text: widget.property.location.locationName ??
+                        'Unknown location',
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 24,
@@ -73,11 +68,8 @@ class _PropertyCardState extends State<PropertyCard> {
                               Text(
                                 '2',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFeatures: [
-                                    FontFeature.superscripts()
-                                  ]
-                                ),
+                                    fontWeight: FontWeight.bold,
+                                    fontFeatures: [FontFeature.superscripts()]),
                               )
                             ],
                           )

@@ -6,6 +6,7 @@ import 'message_element.dart';
 
 class MessageList extends StatelessWidget {
   final ScrollController controller;
+
   const MessageList({Key? key, required this.controller}) : super(key: key);
 
   @override
@@ -18,7 +19,9 @@ class MessageList extends StatelessWidget {
       controller: controller,
       children: messages
           .map((message) => MessageElement(chatElement: message))
-          .toList().reversed.toList(),
+          .toList()
+          .reversed
+          .toList(),
     );
   }
 }

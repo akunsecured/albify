@@ -7,9 +7,8 @@ class SearchQueriesProvider extends ChangeNotifier {
 
   SearchQueriesProvider(this.databaseService);
 
-  Stream<List<SearchQuery>> searchQueries() => databaseService
-      .searchQueriesStream()
-      .map((snapshot) => snapshot.docs
-      .map((searchQuery) => SearchQuery.fromDocumentSnapshot(searchQuery))
-      .toList());
+  Stream<List<SearchQuery>> searchQueries() =>
+      databaseService.searchQueriesStream().map((snapshot) => snapshot.docs
+          .map((searchQuery) => SearchQuery.fromDocumentSnapshot(searchQuery))
+          .toList());
 }

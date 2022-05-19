@@ -14,10 +14,7 @@ class LoginIsNeeded extends StatelessWidget {
         children: [
           Text(
             'This function is avaible only for authenticated users! Log in to enjoy fully the application!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           Utils.addVerticalSpace(32),
           RoundedButton(

@@ -22,12 +22,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Edit profile'),
-          centerTitle: true,
-        ),
-        body: ChangeNotifierProvider(
-            create: (_) => EditProfileProvider(
-                _databaseService),
-            builder: (context, child) => EditProfilePageWidgets()));
+      appBar: AppBar(
+        title: Text('Edit profile'),
+        centerTitle: true,
+      ),
+      body: ChangeNotifierProvider(
+          create: (_) => EditProfileProvider(_databaseService),
+          builder: (context, child) => EditProfilePageWidgets()));
 }

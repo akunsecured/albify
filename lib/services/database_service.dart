@@ -273,7 +273,8 @@ class DatabaseService {
     }
   }
 
-  Future<bool> editProfile(String id, { String? name, String? contactEmail, int? phoneNumber }) async {
+  Future<bool> editProfile(String id,
+      {String? name, String? contactEmail, int? phoneNumber}) async {
     WriteBatch _batch = _firestore.batch();
     try {
       _batch.update(usersRef.doc(id), {
@@ -368,19 +369,22 @@ class DatabaseService {
     return otherUser.name;
   }
 
+  Future<PropertyModel> getPropertyById(String id) async =>
+      PropertyModel.fromDocumentSnapshot(await propertiesRef.doc(id).get());
+
   Future<bool> addToFavorites(String? id) async {
     WriteBatch _batch = _firestore.batch();
     try {
-      var user = await getUserData();
-      if (user!.favoritePropertyIDs != null &&
-          !user.favoritePropertyIDs!.contains(id)) {
-        _batch.update(usersRef.doc(user.id), {
-          'favoritePropertyIDs': FieldValue.arrayUnion([id])
+      var property = await getPropertyById(id!);
+      if (!property.favoriteBy.contains(uid)) {
+        _batch.update(propertiesRef.doc(id), {
+          'favoriteBy': FieldValue.arrayUnion([uid])
         });
         await _batch.commit();
       }
     } on FirebaseException catch (e) {
       Utils.showToast(e.message.toString());
+      print(e.message);
       return false;
     }
     return true;
@@ -389,20 +393,23 @@ class DatabaseService {
   Future<bool> removeFromFavorites(String? id) async {
     WriteBatch _batch = _firestore.batch();
     try {
-      var user = await getUserData();
-      if (user!.favoritePropertyIDs != null &&
-          user.favoritePropertyIDs!.contains(id)) {
-        _batch.update(usersRef.doc(user.id), {
-          'favoritePropertyIDs': FieldValue.arrayRemove([id])
+      var property = await getPropertyById(id!);
+      if (property.favoriteBy.contains(uid)) {
+        _batch.update(propertiesRef.doc(id), {
+          'favoriteBy': FieldValue.arrayRemove([uid])
         });
         await _batch.commit();
       }
     } on FirebaseException catch (e) {
       Utils.showToast(e.message.toString());
+      print(e.message);
       return false;
     }
     return true;
   }
+
+  Stream<QuerySnapshot> favoritePropertiesStream() =>
+      propertiesRef.where('favoriteBy', arrayContains: uid).snapshots();
 
   Future addSearchQuery(SearchQuery newSearchQuery) async {
     WriteBatch _batch = _firestore.batch();

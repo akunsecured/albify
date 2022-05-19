@@ -8,14 +8,13 @@ class MyText extends StatelessWidget {
   late final EdgeInsetsGeometry? margin;
   late final int? maxLines;
 
-  MyText({
-    required this.text,
-    this.color,
-    this.fontSize,
-    this.fontWeight,
-    this.margin,
-    this.maxLines
-  });
+  MyText(
+      {required this.text,
+      this.color,
+      this.fontSize,
+      this.fontWeight,
+      this.margin,
+      this.maxLines});
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +25,9 @@ class MyText extends StatelessWidget {
         maxLines: maxLines,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: this.color ?? Colors.white,
-          fontSize: this.fontSize ?? 16,
-          fontWeight: this.fontWeight ?? FontWeight.normal
-        ),
+            color: this.color ?? Colors.white,
+            fontSize: this.fontSize ?? 16,
+            fontWeight: this.fontWeight ?? FontWeight.normal),
       ),
     );
   }

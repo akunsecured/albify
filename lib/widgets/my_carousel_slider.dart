@@ -9,10 +9,7 @@ class MyCarouselSlider extends StatefulWidget {
   late final List<String> _urls;
   final bool isRounded;
 
-  MyCarouselSlider({
-    required List<dynamic> urls,
-    this.isRounded = true
-  }) {
+  MyCarouselSlider({required List<dynamic> urls, this.isRounded = true}) {
     this._urls = urls.cast<String>();
   }
 
@@ -29,19 +26,18 @@ class _MyCarouselSliderState extends State<MyCarouselSlider> {
       children: [
         CarouselSlider.builder(
           options: CarouselOptions(
-            scrollDirection: Axis.horizontal,
-            height: 200,
-            viewportFraction: 1,
-            autoPlay: widget._urls.length > 1,
-            scrollPhysics: widget._urls.length > 1 ? 
-              AlwaysScrollableScrollPhysics() :
-              NeverScrollableScrollPhysics(),
-            onPageChanged: (index, reason) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            }
-          ),
+              scrollDirection: Axis.horizontal,
+              height: 200,
+              viewportFraction: 1,
+              autoPlay: widget._urls.length > 1,
+              scrollPhysics: widget._urls.length > 1
+                  ? AlwaysScrollableScrollPhysics()
+                  : NeverScrollableScrollPhysics(),
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              }),
           itemCount: widget._urls.length,
           itemBuilder: (BuildContext context, int index, int realIndex) {
             String url = widget._urls[index];
@@ -50,43 +46,40 @@ class _MyCarouselSliderState extends State<MyCarouselSlider> {
         ),
         Utils.addVerticalSpace(16),
         buildIndicator(),
-      ],      
+      ],
     );
   }
 
-  Widget buildImage(url, index) =>
-    widget.isRounded ?
-    ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(RADIUS),
-        topRight: Radius.circular(RADIUS)
-      ),
-      child: Container(
-        color: Colors.grey,
-        width: double.infinity,
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-        ),
-      ),
-    ) :
-    Container(
-      color: Colors.grey,
-      width: double.infinity,
-      child: Image.network(
-        url,
-        fit: BoxFit.cover,
-      ),
-    );
+  Widget buildImage(url, index) => widget.isRounded
+      ? ClipRRect(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(RADIUS),
+              topRight: Radius.circular(RADIUS)),
+          child: Container(
+            color: Colors.grey,
+            width: double.infinity,
+            child: Image.network(
+              url,
+              fit: BoxFit.cover,
+            ),
+          ),
+        )
+      : Container(
+          color: Colors.grey,
+          width: double.infinity,
+          child: Image.network(
+            url,
+            fit: BoxFit.cover,
+          ),
+        );
 
-  Widget buildIndicator() =>
-    AnimatedSmoothIndicator(
-      activeIndex: _selectedIndex,
-      count: widget._urls.length,
-      effect: SlideEffect(
-        dotHeight: 8,
-        dotWidth: 8,
-        activeDotColor: AppStyle.appColorGreen,
-      ),
-    );
+  Widget buildIndicator() => AnimatedSmoothIndicator(
+        activeIndex: _selectedIndex,
+        count: widget._urls.length,
+        effect: SlideEffect(
+          dotHeight: 8,
+          dotWidth: 8,
+          activeDotColor: AppStyle.appColorGreen,
+        ),
+      );
 }

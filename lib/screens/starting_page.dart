@@ -8,16 +8,14 @@ import 'package:provider/provider.dart';
 
 class StartingPage extends StatelessWidget {
   static const String ROUTE_ID = '/';
-  
+
   @override
   Widget build(BuildContext context) {
     final _authService = Provider.of<AuthService>(context, listen: false);
     final _snapshot = _authService.snapshot;
 
-    if (
-      _snapshot!.connectionState == ConnectionState.none ||
-      _snapshot.connectionState == ConnectionState.waiting
-    ) {
+    if (_snapshot!.connectionState == ConnectionState.none ||
+        _snapshot.connectionState == ConnectionState.waiting) {
       return LoadingPage();
     }
 

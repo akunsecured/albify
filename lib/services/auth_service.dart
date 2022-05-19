@@ -11,34 +11,28 @@ class AuthService {
   AsyncSnapshot<FirebaseUser?>? snapshot;
 
   FirebaseUser? _userFromFirebaseAuth(User? user) =>
-    user == null ? null : FirebaseUser(uid: user.uid);
+      user == null ? null : FirebaseUser(uid: user.uid);
 
   Stream<FirebaseUser?> authStateChanges() =>
-    _firebaseAuth.authStateChanges().map(_userFromFirebaseAuth);
+      _firebaseAuth.authStateChanges().map(_userFromFirebaseAuth);
 
   User? get currentUser => _firebaseAuth.currentUser;
 
-  Future<void> signUp({
-    required String email,
-    required String password,
-    required String name
-  }) async {
+  Future<void> signUp(
+      {required String email,
+      required String password,
+      required String name}) async {
     try {
-      UserCredential _userCredential =
-        await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email,
-          password: password
-        );
+      UserCredential _userCredential = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-      UserModel userModel = UserModel(
-        id: _userCredential.user!.uid,
-        name: name
-      );
-      
+      UserModel userModel =
+          UserModel(id: _userCredential.user!.uid, name: name);
+
       await FirebaseFirestore.instance
-        .collection('users')
-        .doc(_userCredential.user!.uid)
-        .set(userModel.toMap());
+          .collection('users')
+          .doc(_userCredential.user!.uid)
+          .set(userModel.toMap());
     } on FirebaseAuthException catch (e) {
       print(e.message);
       Utils.showToast(e.message!);
@@ -48,15 +42,10 @@ class AuthService {
     }
   }
 
-  Future<void> login({
-    required String email,
-    required String password
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password
-      );
+          email: email, password: password);
     } on FirebaseAuthException catch (e) {
       print(e.message.toString());
       Utils.showToast('Wrong credentials');

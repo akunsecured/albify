@@ -21,11 +21,12 @@ class _LoginViewState extends State<LoginView> {
     _passwordFocus = FocusNode();
     _loginButtonFocus = FocusNode();
     super.initState();
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final AuthProvider _authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     return Container(
       margin: EdgeInsets.all(24),
       child: Form(
@@ -35,10 +36,7 @@ class _LoginViewState extends State<LoginView> {
           children: [
             Text(
               "Login",
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold
-              ),
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
             ),
             Column(
               children: [
@@ -66,24 +64,22 @@ class _LoginViewState extends State<LoginView> {
             Column(
               children: [
                 Selector<AuthProvider, bool>(
-                  selector: (_, authProvider) => authProvider.isLoading,
-                  builder: (_, onLoading, __) => onLoading ?
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(AppStyle.appColorGreen),
-                    )
-                    : RoundedButton(
-                        text: 'Login',
-                        onPressed: () async {
-                          if (_loginFormKey.currentState!.validate()) {
-                            print('Email: ${_authProvider.emailController.text}\n' +
-                                  'Password: ${_authProvider.passwordController.text}');
-                            await _authProvider.submit();
-                          }
-                        },
-                        primary: AppStyle.appColorGreen,
-                        focusNode: _loginButtonFocus,
-                    )
-                ),
+                    selector: (_, authProvider) => authProvider.isLoading,
+                    builder: (_, onLoading, __) => onLoading
+                        ? CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation(AppStyle.appColorGreen),
+                          )
+                        : RoundedButton(
+                            text: 'Login',
+                            onPressed: () async {
+                              if (_loginFormKey.currentState!.validate()) {
+                                await _authProvider.submit();
+                              }
+                            },
+                            primary: AppStyle.appColorGreen,
+                            focusNode: _loginButtonFocus,
+                          )),
                 Utils.addVerticalSpace(8),
                 RoundedButton(
                   text: 'Sign up',

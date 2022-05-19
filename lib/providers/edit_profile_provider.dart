@@ -1,4 +1,3 @@
-import 'package:albify/models/user_model.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -73,7 +72,8 @@ class EditProfileProvider extends ChangeNotifier {
     var oldUser = await databaseService.getUserData();
     User? currentUser = FirebaseAuth.instance.currentUser;
 
-    if (_emailController.text.isNotEmpty && _emailController.text.toLowerCase() != currentUser!.email)
+    if (_emailController.text.isNotEmpty &&
+        _emailController.text.toLowerCase() != currentUser!.email)
       currentUser.updateEmail(_emailController.text.toLowerCase());
 
     if (_passwordController.text.isNotEmpty)

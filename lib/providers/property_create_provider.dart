@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:albify/models/property_model.dart';
 import 'package:albify/services/database_service.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,7 +16,10 @@ class PropertyCreateProvider extends ChangeNotifier {
   List<PlatformFile> imageFiles = [];
   PropertyLocation? propertyLocation;
 
-  late final TextEditingController _priceController, _roomsController, _floorspaceController, _descriptionController;
+  late final TextEditingController _priceController,
+      _roomsController,
+      _floorspaceController,
+      _descriptionController;
 
   PropertyCreateProvider(this.databaseService) {
     _priceController = TextEditingController();
@@ -28,8 +29,11 @@ class PropertyCreateProvider extends ChangeNotifier {
   }
 
   TextEditingController get priceController => _priceController;
+
   TextEditingController get roomsController => _roomsController;
+
   TextEditingController get floorspaceController => _floorspaceController;
+
   TextEditingController get descriptionController => _descriptionController;
 
   changeLoadingStatus() async {
@@ -87,19 +91,17 @@ class PropertyCreateProvider extends ChangeNotifier {
     await Future.delayed(Duration(milliseconds: 500));
 
     bool value = await databaseService.addProperty(
-      PropertyModel(
-        location: propertyLocation!,
-        type: PropertyType.values[this.propertyTypeValue],
-        rooms: int.parse(_roomsController.text),
-        price: int.parse(_priceController.text),
-        floorspace: int.parse(_floorspaceController.text),
-        newlyBuilt: this.newlyBuilt,
-        forSale: this.forSale,
-        photoUrls: [],
-        description: _descriptionController.text
-      ),
-      imageFiles
-    );
+        PropertyModel(
+            location: propertyLocation!,
+            type: PropertyType.values[this.propertyTypeValue],
+            rooms: int.parse(_roomsController.text),
+            price: int.parse(_priceController.text),
+            floorspace: int.parse(_floorspaceController.text),
+            newlyBuilt: this.newlyBuilt,
+            forSale: this.forSale,
+            photoUrls: [],
+            description: _descriptionController.text),
+        imageFiles);
     changeLoadingStatus();
     return value;
   }

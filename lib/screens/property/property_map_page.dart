@@ -6,9 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class PropertyMapPage extends StatelessWidget {
   final PropertyModel property;
 
-  PropertyMapPage({
-    required this.property
-  });
+  PropertyMapPage({required this.property});
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +19,10 @@ class PropertyMapPage extends StatelessWidget {
         center: LatLng(property.location.lat, property.location.lng),
         markers: [
           Marker(
-            markerId: MarkerId(property.id!),
-            position: LatLng(
-              property.location.lat,
-              property.location.lng
-            ),
-            infoWindow: InfoWindow(
-              title: property.location.locationName ?? 'Unknown location'
-            )
-          )
+              markerId: MarkerId(property.id!),
+              position: LatLng(property.location.lat, property.location.lng),
+              infoWindow: InfoWindow(
+                  title: property.location.locationName ?? 'Unknown location'))
         ].toSet(),
       ),
     );

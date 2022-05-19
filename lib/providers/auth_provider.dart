@@ -10,8 +10,10 @@ class AuthProvider extends ChangeNotifier {
   bool isLoadingAnonymous = false;
   bool isDisposed = false;
 
-
-  late final TextEditingController _nameController, _emailController, _passwordController, _confirmPasswordController;
+  late final TextEditingController _nameController,
+      _emailController,
+      _passwordController,
+      _confirmPasswordController;
 
   AuthProvider(this.authService) {
     _nameController = TextEditingController();
@@ -21,9 +23,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   TextEditingController get nameController => _nameController;
+
   TextEditingController get emailController => _emailController;
+
   TextEditingController get passwordController => _passwordController;
-  TextEditingController get confirmPasswordController => _confirmPasswordController;
+
+  TextEditingController get confirmPasswordController =>
+      _confirmPasswordController;
 
   @override
   void dispose() {
@@ -61,15 +67,12 @@ class AuthProvider extends ChangeNotifier {
 
     if (isLoginView) {
       await authService.login(
-        email: _emailController.text,
-        password: _passwordController.text
-      );
+          email: _emailController.text, password: _passwordController.text);
     } else {
       await authService.signUp(
-        email: _emailController.text,
-        password: _passwordController.text,
-        name: _nameController.text
-      );
+          email: _emailController.text,
+          password: _passwordController.text,
+          name: _nameController.text);
     }
 
     changeLoadingStatus();

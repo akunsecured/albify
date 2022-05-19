@@ -4,6 +4,7 @@ import 'my_text.dart';
 
 class MyErrorPrinter extends StatelessWidget {
   final Object? error;
+
   const MyErrorPrinter({Key? key, this.error}) : super(key: key);
 
   @override
@@ -11,9 +12,7 @@ class MyErrorPrinter extends StatelessWidget {
     print(error.toString());
     return Align(
       alignment: Alignment.center,
-      child: MyText(
-          text: error.toString()
-      ),
+      child: MyText(text: error.toString()),
     );
   }
 }

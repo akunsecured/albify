@@ -83,9 +83,8 @@ class _EditProfilePageWidgetsState extends State<EditProfilePageWidgets> {
       key: _editProfileFormKey,
       child: SingleChildScrollView(
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height
-          ),
+          constraints:
+              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
@@ -129,7 +128,8 @@ class _EditProfilePageWidgetsState extends State<EditProfilePageWidgets> {
                 icon: Icon(Icons.phone),
                 validateFun: (value) =>
                     Utils.validatePhoneNumber(value, isNeeded: false),
-                textEditingController: _editProfileProvider.phoneNumberController,
+                textEditingController:
+                    _editProfileProvider.phoneNumberController,
                 inputType: TextInputType.phone,
                 fillColor: Colors.white,
               ),
@@ -163,7 +163,8 @@ class _EditProfilePageWidgetsState extends State<EditProfilePageWidgets> {
                     context: context,
                     builder: (context) => MyAlertDialog(
                         title: 'Deleting profile',
-                        content: 'Are you sure you want to delete your profile?',
+                        content:
+                            'Are you sure you want to delete your profile?',
                         onPositiveButtonPressed: () async {
                           var result = await showDialog(
                               builder: (context) => MyPasswordRequireDialog(),
