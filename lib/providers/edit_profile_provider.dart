@@ -73,11 +73,21 @@ class EditProfileProvider extends ChangeNotifier {
     User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (_emailController.text.isNotEmpty &&
-        _emailController.text.toLowerCase() != currentUser!.email)
-      currentUser.updateEmail(_emailController.text.toLowerCase());
+        _emailController.text.toLowerCase() != currentUser!.email) {
+      try {
+        await currentUser.updateEmail(_emailController.text.toLowerCase());
+      } on Exception {
+        return false;
+      }
+    }
 
-    if (_passwordController.text.isNotEmpty)
-      currentUser!.updatePassword(_passwordController.text);
+    if (_passwordController.text.isNotEmpty) {
+      try {
+        await currentUser!.updatePassword(_passwordController.text);
+      } on Exception {
+        return false;
+      }
+    }
 
     if (oldUser != null) {
       String name = _nameController.text.isEmpty

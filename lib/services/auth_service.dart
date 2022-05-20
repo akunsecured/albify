@@ -42,13 +42,15 @@ class AuthService {
     }
   }
 
-  Future<void> login({required String email, required String password}) async {
+  Future login({required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      return true;
     } on FirebaseAuthException catch (e) {
       print(e.message.toString());
       Utils.showToast('Wrong credentials');
+      return false;
     }
   }
 

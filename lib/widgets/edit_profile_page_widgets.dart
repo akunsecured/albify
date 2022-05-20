@@ -192,8 +192,21 @@ class _EditProfilePageWidgetsState extends State<EditProfilePageWidgets> {
     );
   }
 
-  doUpdate() {
+  doUpdate() async {
     if (_editProfileFormKey.currentState!.validate()) {
+      if (_editProfileProvider.emailController.text.isNotEmpty ||
+          _editProfileProvider.passwordController.text.isNotEmpty) {
+        var result = await showDialog(
+            builder: (context) => MyPasswordRequireDialog(), context: context);
+        if (result == null) {
+          return;
+        }
+        var success = await _authService.login(
+            email: currentUser.email!, password: result);
+        if (!success) {
+          return;
+        }
+      }
       _editProfileProvider.saveProfile().then((value) {
         if (value) {
           Utils.showToast('Profile updated successfully');
