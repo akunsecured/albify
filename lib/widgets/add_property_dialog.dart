@@ -216,52 +216,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                                   ),
                                 )
                               : Container()),
-                      // _imageFiles.isNotEmpty ?
-                      //   Container(
-                      //     margin: EdgeInsets.only(
-                      //       top: 8
-                      //     ),
-                      //     child: SingleChildScrollView(
-                      //       child: Container(
-                      //         child: ResponsiveGridRow(
-                      //           children: _imageFiles.map(
-                      //             (image) => ResponsiveGridCol(
-                      //               xs: 12,
-                      //               sm: 12,
-                      //               md: 12,
-                      //               lg: 6,
-                      //               xl: 6,
-                      //               child: Stack(
-                      //                 children: [
-                      //                   kIsWeb ?
-                      //                     Image.memory(
-                      //                       image.bytes!,
-                      //                       fit: BoxFit.cover,
-                      //                     ) :
-                      //                     Image.file(
-                      //                       File(image.path!),
-                      //                       fit: BoxFit.cover
-                      //                     ),
-                      //                   Container(
-                      //                     alignment: Alignment.topRight,
-                      //                     child: IconButton(
-                      //                       icon: Icon(Icons.delete),
-                      //                       onPressed: () {
-                      //                         setState(() {
-                      //                           _imageFiles.remove(image);
-                      //                         });
-                      //                       },
-                      //                     ),
-                      //                   )
-                      //                 ]
-                      //               ),
-                      //             )
-                      //           ).toList(),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   )
-                      //   : Container(),
                       Utils.addVerticalSpace(16),
                       Selector<PropertyCreateProvider, bool>(
                         selector: (_, propertyCreateProvider) =>
@@ -276,14 +230,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                                 onPressed: () async {
                                   if (_addPropertyFormKey.currentState!
                                       .validate()) {
-                                    // if (_imageFiles.isEmpty) {
-                                    //   Utils.showToast('At least one image must be selected');
-                                    // } else if (propertyLocation == null) {
-                                    //   Utils.showToast('Coordinates must be selected');
-                                    // } else {
-                                    //   bool value = await _propertyCreateProvider.submit();
-                                    //   Navigator.pop(context, value);
-                                    // }
                                     if (_propertyCreateProvider
                                         .imageFiles.isEmpty) {
                                       Utils.showToast(
@@ -323,9 +269,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
         allowedExtensions: ['jpg', 'png', 'jpeg']);
 
     if (result != null) {
-      // setState(() {
-      //   _imageFiles = result.files;
-      // });
       _propertyCreateProvider.changeImages(result.files);
     }
   }
@@ -350,7 +293,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
           '${place.locality}, ${place.thoroughfare} ${place.subThoroughfare}, ${place.postalCode} ${place.country}';
     }
 
-    // _propertyCreateProvider.changeLocationName(str);
     _propertyCreateProvider.changeLocation(
         PropertyLocation(position.latitude, position.longitude, str));
   }

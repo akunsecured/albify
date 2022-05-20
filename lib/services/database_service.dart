@@ -298,8 +298,7 @@ class DatabaseService {
       var conversation = snapshot.docs
           .map((doc) => ConversationModel.fromDocumentSnapshot(doc))
           .toList()
-        ..removeWhere((element) => !element.participants.contains(otherUserID))
-        ..first;
+        ..removeWhere((element) => !element.participants.contains(otherUserID));
 
       return conversation.isNotEmpty
           ? conversation.first.id!
